@@ -1,11 +1,11 @@
 #Thumblr
 
-Thumblr is an app that proveds an abstraction to deal images throughout the storefront project. The image below illustates the components involved.  
+Thumblr is an app that provides an abstraction to deal with images throughout the storefront project. The image below illustates the components involved.  
 
 ![](http://s3.amazonaws.com/storefront-dump/upload.png)
 
 
-The upload interface is interface that accepts files as an input.  
+The upload interface is  accepts files as an input.  
 It takes care of the following steps:
 
 * The original file gets uploaded to S3
