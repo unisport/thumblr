@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import sys
+from os.path import realpath, join, dirname
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -21,6 +23,8 @@ SECRET_KEY = '$)amh+j3*#ks-_2+zvpn&8urikwrg2jcpaahop5$&4+yd*i&p-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+sys.path.append(realpath(join(dirname(__file__), '../..')))
 
 TEMPLATE_DEBUG = True
 
@@ -36,6 +40,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.sites',
+    'south',
+    'thumblr',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -81,3 +89,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+AWS_THUMBLR_BUCKET = os.environ.get('AWS_THUMBLR_BUCKET', 'thumblr-testing')

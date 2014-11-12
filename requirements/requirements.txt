@@ -1,0 +1,9 @@
+Django==1.6.0
+South==0.8.4
+
+boto==2.34.0
+django-boto==0.3.8
+
+jsonfield==1.0.0
+
+Pillow==2.6.1
