@@ -1,6 +1,7 @@
 class ImageMetadataDTO(object):
-    def __init__(self, hash=None, file_name='', file_type=None,
-                 site_id=None, content_type_id=None, object_id=None):
+    def __init__(self, file_name='', file_type=None,
+                 site_id=None, content_type_id=None,
+                 object_id=None):
 
         self.file_name = file_name
         self.file_type = file_type

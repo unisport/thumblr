@@ -5,7 +5,7 @@ from django.db import models
 from django.conf import settings
 from django_boto.s3.storage import S3Storage
 from jsonfield import JSONField
-import os
+
 
 s3 = S3Storage(
     bucket_name=settings.AWS_THUMBLR_BUCKET,
