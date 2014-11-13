@@ -1,4 +1,4 @@
-class ImageMetadataDTO(object):
+class ImageMetadata(object):
     def __init__(self, file_name='', file_type=None,
                  site_id=None, content_type_id=None,
                  object_id=None):

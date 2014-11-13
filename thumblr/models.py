@@ -13,13 +13,23 @@ s3 = S3Storage(
     secret=settings.AWS_SECRET_ACCESS_KEY,
 )
 
+
 class ImageOriginal(models.Model):
     file_name = models.CharField(max_length=256)
     image = models.ImageField(storage=s3)
 
+
 class ImageHashed(models.Model):
     hash = models.CharField(max_length=256)
     image = models.ImageField(storage=s3)
+
+
+class ImageType(object):
+    ORIGINAL = "original"
+    THUMBNAIL = "thumbnail"
+    SMALL = "small"
+    MEDIUM = "medium"
+
 
 class Image(models.Model):
 
@@ -37,6 +47,8 @@ class Image(models.Model):
 
     image_original = models.OneToOneField(ImageOriginal, help_text='Stores original the image with original filename')
     image_hashed = models.OneToOneField(ImageHashed, help_text='Stores image with hashed name to be served via CF')
+
+    # storage = models.ImageField(storage=s3, upload_to='thumblr_images')
 
     size = models.SmallIntegerField(verbose_name='Image size',choices=SIZE_CHOICES, default=ORIGINAL_SIZE)
     file_name = models.CharField(null=True, max_length=128)

@@ -61,3 +61,6 @@ venv/
 
 # sqlite db
 example/db.sqlite3
+
+# media root
+media/

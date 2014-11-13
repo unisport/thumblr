@@ -1,9 +1,9 @@
-from thumblr.dto import ImageMetadataDTO
+from thumblr.dto import ImageMetadata
 from thumblr.models import Image
 
 
 def add_image(image_file, image_metadata):
-    assert isinstance(image_metadata, ImageMetadataDTO)
+    assert isinstance(image_metadata, ImageMetadata)
 
     image = Image()
 
