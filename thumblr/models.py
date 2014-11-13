@@ -14,50 +14,48 @@ s3 = S3Storage(
 )
 
 
-class ImageOriginal(models.Model):
-    file_name = models.CharField(max_length=256)
-    image = models.ImageField(storage=s3)
-
-
-class ImageHashed(models.Model):
-    hash = models.CharField(max_length=256)
-    image = models.ImageField(storage=s3)
-
-
-class ImageType(object):
-    ORIGINAL = "original"
-    THUMBNAIL = "thumbnail"
-    SMALL = "small"
-    MEDIUM = "medium"
+class Website(models.Model):
+    id = models.IntegerField(primary_key=True)
+    url = models.URLField(unique=True, null=False)
 
 
 class Image(models.Model):
+    class Meta:
+        db_table = "images"
 
-    ORIGINAL_SIZE = 0
-    SMALL_SIZE = 1
-    MEDIUM_SIZE = 2
-    LARGE_SIZE = 3
-
-    SIZE_CHOICES = (
-        (ORIGINAL_SIZE, 'original'),
-        (SMALL_SIZE, 'small'),
-        (MEDIUM_SIZE, 'medium'),
-        (LARGE_SIZE, 'large')
-    )
-
-    image_original = models.OneToOneField(ImageOriginal, help_text='Stores original the image with original filename')
-    image_hashed = models.OneToOneField(ImageHashed, help_text='Stores image with hashed name to be served via CF')
-
-    # storage = models.ImageField(storage=s3, upload_to='thumblr_images')
-
-    size = models.SmallIntegerField(verbose_name='Image size',choices=SIZE_CHOICES, default=ORIGINAL_SIZE)
-    file_name = models.CharField(null=True, max_length=128)
-    file_type = models.CharField(null=True, max_length=64)
-
-    site = models.ForeignKey(Site, null=True)
-
-    object_content_type = models.ForeignKey(ContentType, null=True)
+    website = models.ForeignKey(Website, null=False, default=1)
+    content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.PositiveIntegerField(null=True)
-    content_object = GenericForeignKey('object_content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
 
+
+class ImageSize(models.Model):
+    class Meta:
+        db_table = "sizes"
+
+    name = models.CharField(max_length=30)
+    max_width = models.IntegerField()
+    max_height = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+
+class ImageFile(models.Model):
+    class Meta:
+        db_table = "image_files"
+
+    image = models.ForeignKey(Image)
+    image_in_storage = models.ImageField(storage=s3)
+    image_hash = models.CharField(max_length=256)
+    size = models.ForeignKey(ImageSize)
+    original_file_name = models.CharField(max_length=256)
     meta_data = JSONField(null=True)
+
+    # Here we can store old hash or link to old ImageFile object. Second one is much better!
+    old = models.CharField(max_length=256)
+
+    def __str__(self):
+        return "{} Hash: {}".format(self.original_file_name, self.image_hash)
+
+
