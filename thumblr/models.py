@@ -23,9 +23,22 @@ class ImageHashed(models.Model):
 
 class Image(models.Model):
 
+    ORIGINAL_SIZE = 0
+    SMALL_SIZE = 1
+    MEDIUM_SIZE = 2
+    LARGE_SIZE = 3
+
+    SIZE_CHOICES = (
+        (ORIGINAL_SIZE, 'original'),
+        (SMALL_SIZE, 'small'),
+        (MEDIUM_SIZE, 'medium'),
+        (LARGE_SIZE, 'large')
+    )
+
     image_original = models.OneToOneField(ImageOriginal, help_text='Stores original the image with original filename')
     image_hashed = models.OneToOneField(ImageHashed, help_text='Stores image with hashed name to be served via CF')
 
+    size = models.SmallIntegerField(verbose_name='Image size',choices=SIZE_CHOICES, default=ORIGINAL_SIZE)
     file_name = models.CharField(null=True, max_length=128)
     file_type = models.CharField(null=True, max_length=64)
 
