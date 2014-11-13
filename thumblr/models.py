@@ -13,6 +13,13 @@ s3 = S3Storage(
     secret=settings.AWS_SECRET_ACCESS_KEY,
 )
 
+class ImageOriginal(models.Model):
+    file_name = models.CharField()
+    image = models.ImageField(storage=s3)
+
+class ImageHashed(models.Model):
+    hash = models.CharField()
+    image = models.ImageField(storage=s3)
 
 class Image(models.Model):
     storage = models.ImageField(storage=s3, upload_to='thumblr_images')
