@@ -14,16 +14,12 @@ s3 = S3Storage(
 )
 
 
-class Website(models.Model):
-    id = models.IntegerField(primary_key=True)
-    url = models.URLField(unique=True, null=False)
-
 
 class Image(models.Model):
     class Meta:
         db_table = "images"
 
-    website = models.ForeignKey(Website, null=False, default=1)
+    website = models.ForeignKey(Site, null=False, default=1)
     content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
