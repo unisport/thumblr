@@ -1,11 +1,12 @@
+import os
+
 from django.core.files.uploadedfile import UploadedFile
 from django.test import TestCase
-import os
+
 from thumblr.files import HashedFile
 
 
 class TestHashedFile(TestCase):
-
     def setUp(self):
         self.image_file_path = os.path.join(
             os.path.dirname(__file__), "data", "boots.jpg"
