@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
@@ -12,7 +13,6 @@ s3 = S3Storage(
     key=settings.AWS_ACCESS_KEY_ID,
     secret=settings.AWS_SECRET_ACCESS_KEY,
 )
-
 
 
 class Image(models.Model):
@@ -41,8 +41,11 @@ class ImageFile(models.Model):
     class Meta:
         db_table = "image_files"
 
+    def upload_to(self):
+        return 'images/{}/{}'.format(datetime.strftime(datetime.today(), "%d%m%Y"), self.original_file_name)
+
     image = models.ForeignKey(Image)
-    image_in_storage = models.ImageField(storage=s3)
+    image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash = models.CharField(max_length=256)
     size = models.ForeignKey(ImageSize)
     original_file_name = models.CharField(max_length=256)
