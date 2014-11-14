@@ -36,11 +36,11 @@ class ImageSize(models.Model):
         return self.name
 
 
-class ImageFile(models.Model):
+def upload_to(inst, filename):
+    return 'images/{date}'.format(date=datetime.today().strftime("%d-%m-%Y"))
 
-    @staticmethod
-    def upload_to():
-        return 'images/{date}'.format(date=datetime.today().strftime("%d%m%Y"))
+
+class ImageFile(models.Model):
 
     image = models.ForeignKey(Image)
     image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
