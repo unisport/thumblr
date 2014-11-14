@@ -1,4 +1,4 @@
-Django==1.6.0
+Django==1.6.8
 South==0.8.4
 
 boto==2.34.0
