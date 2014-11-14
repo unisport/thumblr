@@ -19,7 +19,7 @@ class Image(models.Model):
     class Meta:
         db_table = "images"
 
-    website = models.ForeignKey(Site, null=False, default=1)
+    site = models.ForeignKey(Site, null=False, default=1)
     content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
