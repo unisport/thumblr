@@ -42,7 +42,7 @@ class ImageFile(models.Model):
         db_table = "image_files"
 
     image = models.ForeignKey(Image)
-    image_in_storage = models.ImageField(storage=s3)
+    image_in_storage = models.ImageField(storage=s3, upload_to="thumblr_images")
     image_hash = models.CharField(max_length=256)
     size = models.ForeignKey(ImageSize)
     original_file_name = models.CharField(max_length=256)
