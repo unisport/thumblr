@@ -11,7 +11,9 @@ def add_image_view(request):
         if form.is_valid():
             image_metadata = dto.ImageMetadata(
                 file_name=request.FILES['image'].name,
-                file_type=request.POST['image_type'],
+                site=request.POST['site'],
+                content_type=request.POST['content_type'],
+                object_id=request.POST['object_id']
             )
 
             try:
@@ -21,17 +23,20 @@ def add_image_view(request):
                 )
 
                 return rest_message(
+                    http_status_code=200,
                     status="done",
                     image_hash=image_hash
                 )
 
             except Exception as ex:
                 return rest_message(
+                    http_status_code=500,
                     status="error",
                     message=str(ex)
                 )
 
         return rest_message(
+            http_status_code=500,
             status="error",
             message="invalid form"
         )
