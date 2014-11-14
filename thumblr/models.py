@@ -23,6 +23,7 @@ class Image(models.Model):
     content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
+    original_file_name = models.CharField(max_length=256)
 
 
 class ImageSize(models.Model):
@@ -41,14 +42,14 @@ class ImageFile(models.Model):
     class Meta:
         db_table = "image_files"
 
-    def upload_to(self):
-        return 'images/{}/{}'.format(datetime.strftime(datetime.today(), "%d%m%Y"), self.original_file_name)
+    @staticmethod
+    def upload_to():
+        return 'images/{}'.format(datetime.strftime(datetime.today(), "%d%m%Y"),)
 
     image = models.ForeignKey(Image)
     image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash = models.CharField(max_length=256)
     size = models.ForeignKey(ImageSize)
-    original_file_name = models.CharField(max_length=256)
     meta_data = JSONField(null=True)
 
     # Here we can store old hash or link to old ImageFile object. Second one is much better!
