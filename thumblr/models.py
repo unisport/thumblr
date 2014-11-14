@@ -30,9 +30,9 @@ class ImageSize(models.Model):
     class Meta:
         db_table = "sizes"
 
-    name = models.CharField(max_length=30)
-    max_width = models.IntegerField()
-    max_height = models.IntegerField()
+    name = models.CharField(max_length=30, primary_key=True)
+    max_width = models.IntegerField(null=True)
+    max_height = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
