@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding model 'Image'
-        db.create_table('images', (
+        db.create_table(u'thumblr_image', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('site', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['sites.Site'])),
             ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True)),
@@ -19,7 +19,7 @@ class Migration(SchemaMigration):
         db.send_create_signal(u'thumblr', ['Image'])
 
         # Adding model 'ImageSize'
-        db.create_table('sizes', (
+        db.create_table(u'thumblr_imagesize', (
             ('name', self.gf('django.db.models.fields.CharField')(max_length=30, primary_key=True)),
             ('max_width', self.gf('django.db.models.fields.IntegerField')(null=True)),
             ('max_height', self.gf('django.db.models.fields.IntegerField')(null=True)),
@@ -27,7 +27,7 @@ class Migration(SchemaMigration):
         db.send_create_signal(u'thumblr', ['ImageSize'])
 
         # Adding model 'ImageFile'
-        db.create_table('image_files', (
+        db.create_table(u'thumblr_imagefile', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('image', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['thumblr.Image'])),
             ('image_in_storage', self.gf('django.db.models.fields.files.ImageField')(max_length=100)),
@@ -41,13 +41,13 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         # Deleting model 'Image'
-        db.delete_table('images')
+        db.delete_table(u'thumblr_image')
 
         # Deleting model 'ImageSize'
-        db.delete_table('sizes')
+        db.delete_table(u'thumblr_imagesize')
 
         # Deleting model 'ImageFile'
-        db.delete_table('image_files')
+        db.delete_table(u'thumblr_imagefile')
 
 
     models = {
@@ -65,7 +65,7 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         u'thumblr.image': {
-            'Meta': {'object_name': 'Image', 'db_table': "'images'"},
+            'Meta': {'object_name': 'Image'},
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']", 'null': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True'}),
@@ -73,7 +73,7 @@ class Migration(SchemaMigration):
             'site': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['sites.Site']"})
         },
         u'thumblr.imagefile': {
-            'Meta': {'object_name': 'ImageFile', 'db_table': "'image_files'"},
+            'Meta': {'object_name': 'ImageFile'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['thumblr.Image']"}),
             'image_hash': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
@@ -83,7 +83,7 @@ class Migration(SchemaMigration):
             'size': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['thumblr.ImageSize']"})
         },
         u'thumblr.imagesize': {
-            'Meta': {'object_name': 'ImageSize', 'db_table': "'sizes'"},
+            'Meta': {'object_name': 'ImageSize'},
             'max_height': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             'max_width': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'primary_key': 'True'})

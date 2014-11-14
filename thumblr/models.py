@@ -16,8 +16,6 @@ s3 = S3Storage(
 
 
 class Image(models.Model):
-    class Meta:
-        db_table = "images"
 
     site = models.ForeignKey(Site, null=False, default=1)
     content_type = models.ForeignKey(ContentType, null=True)
@@ -27,8 +25,8 @@ class Image(models.Model):
 
 
 class ImageSize(models.Model):
-    class Meta:
-        db_table = "sizes"
+
+    ORIGINAL = 'original'
 
     name = models.CharField(max_length=30, primary_key=True)
     max_width = models.IntegerField(null=True)
@@ -39,12 +37,10 @@ class ImageSize(models.Model):
 
 
 class ImageFile(models.Model):
-    class Meta:
-        db_table = "image_files"
 
     @staticmethod
     def upload_to():
-        return 'images/{}'.format(datetime.strftime(datetime.today(), "%d%m%Y"),)
+        return 'images/{date}'.format(date=datetime.today().strftime("%d%m%Y"))
 
     image = models.ForeignKey(Image)
     image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)

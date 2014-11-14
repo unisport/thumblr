@@ -11,7 +11,7 @@ def add_image_view(request):
         if form.is_valid():
             image_metadata = dto.ImageMetadata(
                 file_name=request.FILES['image'].name,
-                site=request.POST['site'],
+                site_id=request.POST['site_id'],
                 content_type=request.POST['content_type'],
                 object_id=request.POST['object_id']
             )
