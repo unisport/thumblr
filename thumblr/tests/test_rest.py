@@ -1,14 +1,15 @@
 from datetime import datetime
-import time
 import random
+import os
+import sys
+
 import boto
 from django.conf import settings
 from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
-import os
-import sys
 from moto import mock_s3
+
 from thumblr.models import ImageSize
 from thumblr.utils.hash import file_hash
 
