@@ -1,3 +1,4 @@
+import os
 from django.db.transaction import atomic
 from thumblr.dto import ImageMetadata, ImageUrlSpec
 from thumblr.exceptions import NoSuchImageException, IncorrectUrlSpecException
