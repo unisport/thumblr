@@ -1,3 +1,4 @@
+import os
 from django.db.transaction import atomic
 from thumblr.dto import ImageMetadata
 from thumblr.models import Image, ImageFile, ImageSize
@@ -25,7 +26,8 @@ def add_image(uploaded_file, image_metadata):
     uploaded_file_hash.name = hash_by_content
 
     image_file.image_hash_in_storage = uploaded_file
-    image_file.image_hash = hash_by_content
+    # File with hashed name and original file extension
+    image_file.image_hash = hash_by_content + os.path.splitext(uploaded_file.name)[-1]
 
     original_size = ImageSize.objects.get(name='original')
 
