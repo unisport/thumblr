@@ -23,11 +23,11 @@ def add_image(uploaded_file, image_metadata):
 
     uploaded_file_hash = uploaded_file
     hash_by_content = file_hash(uploaded_file)
-    uploaded_file_hash.name = hash_by_content
+    uploaded_file_hash.name = hash_by_content + os.path.splitext(uploaded_file.name)[-1]
 
-    image_file.image_hash_in_storage = uploaded_file
+    image_file.image_hash_in_storage = uploaded_file_hash
     # File with hashed name and original file extension
-    image_file.image_hash = hash_by_content + os.path.splitext(uploaded_file.name)[-1]
+    image_file.image_hash = hash_by_content
 
     original_size = ImageSize.objects.get(name='original')
 
