@@ -37,7 +37,8 @@ class ImageSize(models.Model):
 
 
 def upload_to(inst, filename):
-    return 'images/{date}'.format(date=datetime.today().strftime("%d-%m-%Y"))
+    return 'images/{date}/{filename}'.format(date=datetime.today().strftime("%d-%m-%Y"),
+                                             filename=filename)
 
 
 class ImageFile(models.Model):
