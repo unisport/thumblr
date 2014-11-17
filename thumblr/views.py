@@ -12,7 +12,7 @@ def add_image_view(request):
             image_metadata = dto.ImageMetadata(
                 file_name=request.FILES['image'].name,
                 site_id=request.POST['site_id'],
-                content_type=request.POST['content_type'],
+                content_type_id=request.POST['content_type'],
                 object_id=request.POST['object_id']
             )
 
