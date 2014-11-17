@@ -52,3 +52,15 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Pycharm
+.idea/
+
+# Virtual Env
+venv/
+
+# sqlite db
+example/db.sqlite3
+
+# media root
+media/
