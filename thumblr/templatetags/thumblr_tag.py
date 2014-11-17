@@ -7,7 +7,7 @@ from .utils import parse_kwargs
 register = template.Library()
 
 
-def thubmlr_tag_parser(parser, token):
+def thumblr_tag_parser(parser, token):
     try:
         splited = token.split_contents()
         tag_name, file_name, params = splited[0], splited[1], splited[2:]
@@ -26,13 +26,19 @@ class ThumblrNode(template.Node):
         self.site_id = site_id
         self.main = main
 
-        image_spec = ImageMetadata(
-            file_name=file_name,
-            size_slug=size,
-            site_id=site_id,
-        )
+        self._url = None
 
-        self.url = get_image_url(image_spec, ImageUrlSpec.CDN_URL)
+    @property
+    def url(self):
+        if self._url is None:
+            image_spec = ImageMetadata(
+                file_name=self.file_name,
+                size_slug=self.size,
+                site_id=self.site_id,
+            )
+            self._url = get_image_url(image_spec, ImageUrlSpec.CDN_URL)
+
+        return self._url
 
     def render(self, context):
         return self.url

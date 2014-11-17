@@ -7,6 +7,7 @@ from django.conf import settings
 from django.db.models import Q
 from django_boto.s3.storage import S3Storage
 from jsonfield import JSONField
+import ntpath
 from thumblr.dto import ImageMetadata
 
 
@@ -60,7 +61,7 @@ class ImageSize(models.Model):
 
 def upload_to(inst, filename):
     return 'images/{date}/{filename}'.format(date=datetime.today().strftime("%d-%m-%Y"),
-                                             filename=filename)
+                                             filename=ntpath.basename(filename))
 
 
 class ImageFile(models.Model):
