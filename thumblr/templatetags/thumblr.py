@@ -1,4 +1,6 @@
 from django import template
+from thumblr.dto import ImageMetadata, ImageUrlSpec
+from thumblr.usecases import get_image_url
 from .utils import parse_kwargs
 
 
@@ -24,5 +26,13 @@ class ThumblrNode(template.Node):
         self.site_id = site_id
         self.main = main
 
+        image_spec = ImageMetadata(
+            file_name=file_name,
+            size_slug=size,
+            site_id=site_id,
+        )
+
+        self.url = get_image_url(image_spec, ImageUrlSpec.CDN_URL)
+
     def render(self, context):
-        pass
+        return self.url

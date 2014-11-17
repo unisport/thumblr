@@ -1,14 +1,13 @@
 from django.db.transaction import atomic
-
 from django.conf import settings
 
 from celery import Celery, Task
 from raven import Client
 
-
-
-from thumblr.dto import ImageMetadata
+from thumblr.dto import ImageMetadata, ImageUrlSpec
+from thumblr.exceptions import NoSuchImageException, IncorrectUrlSpecException
 from thumblr.models import Image, ImageFile, ImageSize
+from thumblr.utils.cdn import get_cdn_domain
 from thumblr.utils.hash import file_hash
 
 client = Client(settings.SENTRY_DSN)
@@ -50,6 +49,8 @@ class ImagesCallbackTask(Task):
                                'einfo': einfo
                               }
                       )
+
+
 @atomic
 @celery.task(base=ImagesCallbackTask, name='add_image')
 def add_image(uploaded_file, image_metadata):
@@ -59,7 +60,7 @@ def add_image(uploaded_file, image_metadata):
 
     image.original_file_name = image_metadata.original_file_name
     image.site_id = image_metadata.site_id
-    image.content_type_id = image_metadata.content_type
+    image.content_type_id = image_metadata.content_type_id
     image.object_id = image_metadata.object_id
     image.save()
 
@@ -74,6 +75,32 @@ def add_image(uploaded_file, image_metadata):
 
     image_file.save()
 
+
+def get_image_url(image_metadata_spec, url_spec=False):
+    assert isinstance(image_metadata_spec, ImageMetadata)
+
+    image = Image.objects.filter(
+        Image.get_q(image_metadata_spec)
+    ).first()
+
+    image_file = image.imagefile_set.filter(
+        ImageFile.get_q(image_metadata_spec)
+    ).first()
+
+    if image_file is None:
+        raise NoSuchImageException()
+
+    if url_spec == ImageUrlSpec.S3_URL:
+        return image_file.image_hash_in_storage.url
+    elif url_spec == ImageUrlSpec.CDN_URL:
+        return u"{domain}{path}".format(
+            domain=get_cdn_domain(image_file.image_hash),
+            path=image_file.image_hash_in_storage.name
+        )
+    elif url_spec == ImageUrlSpec.PATH_ONLY_URL:
+        return image_file.image_hash_in_storage.name
+    else:
+        raise IncorrectUrlSpecException()
 
 
 
