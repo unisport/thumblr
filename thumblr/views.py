@@ -7,7 +7,6 @@ from thumblr.utils.rest import rest_message
 def add_image_view(request):
     if request.method == "POST":
         form = AddImageForm(request.POST, request.FILES)
-
         if form.is_valid():
             image_metadata = dto.ImageMetadata(
                 file_name=request.FILES['image'].name,
@@ -40,3 +39,7 @@ def add_image_view(request):
             status="error",
             message="invalid form"
         )
+    else:
+        return rest_message(http_status_code=400,
+                            status="Error",
+                            message="Only POST accepts")
