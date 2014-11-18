@@ -7,7 +7,7 @@ class ImageAdmin(admin.ModelAdmin):
 
 
 class ImageFileAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ('image_hash', 'image_hash_in_storage')
 
 
 class ImageSizeAdmin(admin.ModelAdmin):

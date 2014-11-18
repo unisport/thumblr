@@ -26,6 +26,12 @@ class Image(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     original_file_name = models.CharField(max_length=256)
 
+    def __str__(self):
+        return "{file_name} [{site}]".format(
+            file_name=self.original_file_name,
+            site=self.site.name,
+        )
+
     @classmethod
     def get_q(cls, image_spec):
         assert isinstance(image_spec, ImageMetadata)
@@ -73,11 +79,11 @@ class ImageFile(models.Model):
     size = models.OneToOneField(ImageSize)
     meta_data = JSONField(null=True)
 
-    # Here we can store old hash or link to old ImageFile object. Second one is much better!
-    old = models.CharField(max_length=256)
-
     def __str__(self):
-        return "{} Hash: {}".format(self.original_file_name, self.image_hash)
+        return "{file_name} Hash: {hash}".format(
+            file_name=self.original_file_name,
+            hash=self.image_hash
+        )
 
     @classmethod
     def get_q(cls, image_spec):
