@@ -18,7 +18,7 @@ def add_image_view(request):
             )
 
             try:
-                image_hash = usecases.add_image(
+                usecases.add_image(
                     request.FILES['image'],
                     image_metadata
                 )
@@ -26,7 +26,6 @@ def add_image_view(request):
                 return rest_message(
                     http_status_code=200,
                     status="done",
-                    image_hash=image_hash
                 )
 
             except Exception as ex:
