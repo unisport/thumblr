@@ -45,16 +45,12 @@ class TestAddImageView(TestCase):
             })
             self.assertEqual(resp.status_code, 200, "Add image failed")
 
-    @mock_s3
-    def test_file_in_s3(self):
         original_file = self.bucket_conn.get_key(key_name="images/{date}/{filename}".format(
             date=datetime.today().strftime("%d-%m-%Y"),
             filename="boots.jpg"
         ))
         self.assertIsNotNone(original_file, "Original file does't exist on S3")
 
-    @mock_s3
-    def test_hash_file_is_s3(self):
         hash_file = self.bucket_conn.get_key(key_name="images/{date}/{filename}".format(
             date=datetime.today().strftime("%d-%m-%Y"),
             filename=file_hash(File(open(self.image_file_path, 'rb')))
