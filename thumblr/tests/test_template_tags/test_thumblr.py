@@ -63,4 +63,5 @@ class TestThumblrNode(TestCase):
         """)
         res = t.render(template.Context())
         print(res)
-        self.assertIn(u"unisport.dk", res)
+        self.assertIn(u"unisport.dk", res)  # it MUST be cdn url, not s3
+        self.assertNotIn(u"boots.jpg", res)  # it MUST be hash, not file name
