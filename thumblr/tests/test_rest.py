@@ -32,7 +32,6 @@ class TestAddImageView(TestCase):
         s3_connection = boto.connect_s3(self.aws_key, self.aws_secret)
         self.bucket_conn = s3_connection.get_bucket(self.bucket)
 
-    @mock_s3
     def test_basic_addition(self):
         c = Client()
 
@@ -49,13 +48,13 @@ class TestAddImageView(TestCase):
             date=datetime.today().strftime("%d-%m-%Y"),
             filename="boots.jpg"
         ))
-        self.assertIsNotNone(original_file, "Original file does't exist on S3")
+        self.assertIsNotNone(original_file, "Original file doesn't exist on S3")
 
-        hash_file = self.bucket_conn.get_key(key_name="images/{date}/{filename}".format(
+        hash_file = self.bucket_conn.get_key(key_name="images/{date}/{filename}.jpg".format(
             date=datetime.today().strftime("%d-%m-%Y"),
             filename=file_hash(File(open(self.image_file_path, 'rb')))
         ))
-        self.assertIsNotNone(hash_file, "Hash file does't exist on S3")
+        self.assertIsNotNone(hash_file, "Hash file doesn't exist on S3")
 
 
 

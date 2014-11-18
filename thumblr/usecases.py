@@ -1,3 +1,4 @@
+from django.core.files import File
 import os
 from django.db.transaction import atomic
 from thumblr.dto import ImageMetadata, ImageUrlSpec
@@ -23,15 +24,19 @@ def add_image(uploaded_file, image_metadata):
     image_file.image = image
     image_file.image_in_storage = uploaded_file
 
-    uploaded_file_hash = uploaded_file
-    hash_by_content = file_hash(uploaded_file)
-    uploaded_file_hash.name = hash_by_content
+    hashed_file_name = file_hash(uploaded_file) + os.path.splitext(uploaded_file.name)[-1]
 
-    image_file.image_hash_in_storage = uploaded_file
+    file_by_hash = File(
+        uploaded_file,
+        hashed_file_name
+    )
+
+    image_file.image_hash_in_storage = file_by_hash
+
     # File with hashed name and original file extension
-    image_file.image_hash = hash_by_content + os.path.splitext(uploaded_file.name)[-1]
+    image_file.image_hash = hashed_file_name
 
-    original_size = ImageSize.objects.get(name='original')
+    original_size = ImageSize.objects.get(name=image_metadata.size_slug)
 
     image_file.size = original_size
 
@@ -56,14 +61,14 @@ def get_image_url(image_metadata_spec, url_spec=False):
         raise NoSuchImageException()
 
     if url_spec == ImageUrlSpec.S3_URL:
-        return image_file.image_in_storage.url
+        return image_file.image_hash_in_storage.url
     elif url_spec == ImageUrlSpec.CDN_URL:
         return u"{domain}/{path}".format(
             domain=get_cdn_domain(image_file.image_hash),
-            path=image_file.image_in_storage.name
+            path=image_file.image_hash_in_storage.name
         )
     elif url_spec == ImageUrlSpec.PATH_ONLY_URL:
-        return image_file.image_in_storage.name
+        return image_file.image_hash_in_storage.name
     else:
         raise IncorrectUrlSpecException()
 

@@ -1,6 +1,7 @@
 from thumblr import dto
 from thumblr.forms import AddImageForm
 from thumblr import usecases
+from thumblr.models import ImageSize
 from thumblr.utils.rest import rest_message
 
 
@@ -12,7 +13,8 @@ def add_image_view(request):
                 file_name=request.FILES['image'].name,
                 site_id=request.POST['site_id'],
                 content_type_id=request.POST['content_type'],
-                object_id=request.POST['object_id']
+                object_id=request.POST['object_id'],
+                size_slug=ImageSize.ORIGINAL,
             )
 
             try:
