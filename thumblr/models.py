@@ -21,8 +21,8 @@ s3 = S3Storage(
 class Image(models.Model):
 
     site = models.ForeignKey(Site, null=False, default=1)
-    content_type = models.ForeignKey(ContentType, null=True)
-    object_id = models.PositiveIntegerField(null=True)
+    content_type = models.ForeignKey(ContentType, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
     content_object = GenericForeignKey('content_type', 'object_id')
     original_file_name = models.CharField(max_length=256)
 
@@ -52,8 +52,8 @@ class ImageSize(models.Model):
     ORIGINAL = 'original'
 
     name = models.CharField(max_length=30, primary_key=True)
-    max_width = models.IntegerField(null=True)
-    max_height = models.IntegerField(null=True)
+    max_width = models.IntegerField(null=True, blank=True)
+    max_height = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
