@@ -1,3 +1,4 @@
+from django import template
 from django.core.files import File
 from django.template import Token, TOKEN_TEXT
 from django.test import TestCase
@@ -6,7 +7,7 @@ import os
 from thumblr import usecases
 from thumblr.dto import ImageMetadata
 from thumblr.models import ImageSize
-from thumblr.templatetags.thumblr_tag import thumblr_tag_parser, ThumblrNode
+from thumblr.templatetags.thumblr_tags import thumblr_tag_parser, ThumblrNode
 
 
 class TestThumblrTagParser(TestCase):
@@ -55,3 +56,11 @@ class TestThumblrNode(TestCase):
 
         self.assertIn(u"unisport.dk", url)
 
+    def test_in_template(self):
+        t = template.Template(u"""
+            {% load thumblr_tags %}
+            {% thumblr 'boots.jpg' size='original' %}
+        """)
+        res = t.render(template.Context())
+        print(res)
+        self.assertIn(u"unisport.dk", res)

@@ -42,3 +42,6 @@ class ThumblrNode(template.Node):
 
     def render(self, context):
         return self.url
+
+
+register.tag("thumblr", thumblr_tag_parser)
