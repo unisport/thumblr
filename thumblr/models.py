@@ -2,13 +2,18 @@ from datetime import datetime
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.core.files import File
 from django.db import models
 from django.conf import settings
 from django.db.models import Q
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django_boto.s3.storage import S3Storage
 from jsonfield import JSONField
 import ntpath
+import os
 from thumblr.dto import ImageMetadata
+from thumblr.utils.hash import file_hash
 
 
 s3 = S3Storage(
@@ -77,11 +82,11 @@ class ImageFile(models.Model):
     image_hash_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash = models.CharField(max_length=256)
     size = models.OneToOneField(ImageSize)
-    meta_data = JSONField(null=True)
+    meta_data = JSONField(null=True, blank=True)
 
     def __str__(self):
         return "{file_name} Hash: {hash}".format(
-            file_name=self.original_file_name,
+            file_name=self.image.original_file_name,
             hash=self.image_hash
         )
 
@@ -93,3 +98,21 @@ class ImageFile(models.Model):
 
         return q
 
+
+@receiver(pre_save, sender=ImageFile)
+def fill_hashed_image_fields(sender, instance, *args, **kwargs):
+    assert isinstance(instance, ImageFile)
+
+    uploaded_image = instance.image_in_storage
+
+    hashed_file_name = file_hash(uploaded_image) + os.path.splitext(uploaded_image.name)[-1]
+
+    file_by_hash = File(
+        uploaded_image,
+        hashed_file_name
+    )
+
+    instance.image_hash_in_storage = file_by_hash
+
+    # File with hashed name and original file extension
+    instance.image_hash = hashed_file_name

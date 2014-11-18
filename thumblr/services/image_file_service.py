@@ -1,11 +1,8 @@
-from django.core.files import File
-import os
 from thumblr.dto import ImageMetadata, ImageUrlSpec
 from thumblr.exceptions import NoSuchImageException, IncorrectUrlSpecException
 from thumblr.models import ImageFile, Image, ImageSize
 from thumblr.services.image_service import get_image_by_spec
 from thumblr.utils.cdn import get_cdn_domain
-from thumblr.utils.hash import file_hash
 
 
 def create_image_file(uploaded_file, image_metadata, image_inst):
@@ -16,20 +13,7 @@ def create_image_file(uploaded_file, image_metadata, image_inst):
     image_file.image = image_inst
     image_file.image_in_storage = uploaded_file
 
-    hashed_file_name = file_hash(uploaded_file) + os.path.splitext(uploaded_file.name)[-1]
-
-    file_by_hash = File(
-        uploaded_file,
-        hashed_file_name
-    )
-
-    image_file.image_hash_in_storage = file_by_hash
-
-    # File with hashed name and original file extension
-    image_file.image_hash = hashed_file_name
-
     original_size = ImageSize.objects.get(name=image_metadata.size_slug)
-
     image_file.size = original_size
 
     image_file.save()
