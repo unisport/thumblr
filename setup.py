@@ -14,7 +14,6 @@ setup(
     description='Thumblr is an app that provides an abstraction to deal with '
                 'images throughout the storefront project.',
     long_description=README,
-    url='http://www.example.com/',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
