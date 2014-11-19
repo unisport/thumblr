@@ -1,8 +1,5 @@
 import boto
 from django.conf import settings
-from moto import mock_s3
-
-
 from thumblr.models import upload_to
 from thumblr.tests.base import BaseThumblrTestCase
 

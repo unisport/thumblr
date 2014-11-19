@@ -7,6 +7,11 @@ from thumblr.dto import ImageMetadata
 from thumblr.models import ImageSize, Image
 
 
+# hack mocking with moto multiple times doesn't work, so mock once
+s3_mock = mock_s3()
+s3_mock.__enter__()
+
+
 class BaseThumblrTestCase(TestCase):
 
     def setUp(self):

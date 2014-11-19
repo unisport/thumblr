@@ -1,7 +1,7 @@
 from django import template
 from django.template import Token, TOKEN_TEXT
 from django.test import TestCase
-from mock import MagicMock
+from mock import MagicMock, patch
 from thumblr.templatetags.thumblr_tags import thumblr_tag_parser, ThumblrNode
 from thumblr.tests.base import BaseThumblrTestCase
 

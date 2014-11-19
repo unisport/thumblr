@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
@@ -74,8 +73,8 @@ def upload_to(inst, filename):
     assert isinstance(inst, ImageFile)
 
     # object id used to enalbe uploading of file of same names
-    return '{content_type}/{object_id}/{filename}'.format(
-        content_type=inst.image.content_type.name,
+    return u'{content_type}/{object_id}/{filename}'.format(
+        content_type=inst.image.content_type.name.replace(u" ", u"_"),
         object_id=inst.image.object_id,
         filename=ntpath.basename(filename)
     )
