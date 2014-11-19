@@ -71,8 +71,14 @@ class ImageSize(models.Model):
 
 
 def upload_to(inst, filename):
-    return 'images/{date}/{filename}'.format(date=datetime.today().strftime("%d-%m-%Y"),
-                                             filename=ntpath.basename(filename))
+    assert isinstance(inst, ImageFile)
+
+    # object id used to enalbe uploading of file of same names
+    return '{content_type}/{object_id}/{filename}'.format(
+        content_type=inst.image.content_type.name,
+        object_id=inst.image.object_id,
+        filename=ntpath.basename(filename)
+    )
 
 
 class ImageFile(models.Model):
