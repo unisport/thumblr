@@ -67,8 +67,7 @@ First ensure that you have a valid ssh keys. Than install the application with:
 
         pip install git+ssh://git@github.com/unisport/thumblr.git
 
-
-####Usage
+####Setup
 1. Add thumblr to installed apps:
 
         INSTALLED_APPS = (
@@ -79,8 +78,33 @@ First ensure that you have a valid ssh keys. Than install the application with:
 2. Include thumblr's urls to your urls.py:
 
         url(r'^thumblr/', include('thumblr.urls', namespace='thumblr')),
+
+3. Add environment variables related to AWS and S3 bucket
         
-3. To insert the immage to template use template tags:
+        AWS_ACCESS_KEY_ID="..."
+        AWS_SECRET_ACCESS_KEY="..."
+        AWS_THUMBLR_BUCKET="..."
+        
+####Usage
+ 
+1. To insert image:
+
+        from django.core.files import File
+        from thumblr.models import ImageSize
+        from thumblr.dto import ImageMetadata
+        from thumblr.usecases import add_image
+        
+        image = File(open('boots.jpg'))
+        image_metadata = ImageMetadata(
+                file_name='boots.jpg',
+                site_id=3,
+                size_slug=ImageSize.ORIGINAL,
+                content_type_id=5,
+                object_id=11,
+            )
+        add_image(image, image_metadata)
+        
+2. To use the image into template use template tags:
 
         {% load thumblr_tags %}
         {% thumblr 'boots.jpg' size='original' %}
