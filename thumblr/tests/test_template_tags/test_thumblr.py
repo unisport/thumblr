@@ -1,13 +1,9 @@
 from django import template
-from django.core.files import File
 from django.template import Token, TOKEN_TEXT
 from django.test import TestCase
-from mock import MagicMock
-import os
-from thumblr import usecases
-from thumblr.dto import ImageMetadata
-from thumblr.models import ImageSize
+from mock import MagicMock, patch
 from thumblr.templatetags.thumblr_tags import thumblr_tag_parser, ThumblrNode
+from thumblr.tests.base import BaseThumblrTestCase
 
 
 class TestThumblrTagParser(TestCase):
@@ -22,32 +18,7 @@ class TestThumblrTagParser(TestCase):
         self.assertEqual(node.size, u'normal')
 
 
-class TestThumblrNode(TestCase):
-
-    def setUp(self):
-        self.image_file_path = os.path.join(
-            os.path.dirname(__file__), "..", "data", "boots.jpg"
-        )
-        self.site_id = 1
-        self.content_type_id = 1
-        self.object_id = 1
-
-        original_size = ImageSize(name=ImageSize.ORIGINAL)
-        original_size.save()
-
-        self.image_metadata = ImageMetadata(
-            file_name='boots.jpg',
-            site_id=1,
-            size_slug=ImageSize.ORIGINAL,
-            content_type_id=1,
-            object_id=1,
-        )
-
-        with open(self.image_file_path) as f:
-            usecases.add_image(
-                File(f),
-                self.image_metadata
-            )
+class TestThumblrNode(BaseThumblrTestCase):
 
     def test_basic_usage(self):
         token = Token(TOKEN_TEXT, "thumblr 'boots.jpg' size='original'")
