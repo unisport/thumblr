@@ -20,7 +20,7 @@ The table in which such data is saved could have the following attributes.
 
 The images could then be retrieved using a simple query like:
 
-    Images.objects.filter(content_type='articles', object_id=article_id, site_id=site_id) 
+        Images.objects.filter(content_type='articles', object_id=article_id, site_id=site_id) 
 
 Such a system should allow us to save any type of file. 
 
@@ -61,3 +61,28 @@ I'm thinking it could be useful if we split responsibility into 2-3 subsystems.
 So in phase 1 we want an app that exposes the api described above, with which we can use to create phase 2. 
 
 The most important aspect for us is that we have a standardized API that we can further extend when the need arises. 
+
+####Installation
+First ensure that you have a valid ssh keys. Than install the application with:
+
+        pip install git+ssh://git@github.com/unisport/thumblr.git
+
+
+####Usage
+1. Add thumblr to installed apps:
+
+        INSTALLED_APPS = (
+          ...
+          'thumblr',
+        )
+    
+2. Include thumblr's urls to your urls.py:
+
+        url(r'^thumblr/', include('thumblr.urls', namespace='thumblr')),
+        
+3. To insert the immage to template use template tags:
+
+        {% load thumblr_tags %}
+        {% thumblr 'boots.jpg' size='original' %}
+            
+    
