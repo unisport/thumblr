@@ -12,5 +12,4 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^thumblr/', include('thumblr.urls', namespace='thumblr')),
 )
