@@ -30,9 +30,9 @@ class TestThumblrImgsNode(TestCase):
         self.site_id = 1
         self.content_type_id = 1
         self.object_id = 1
-        self.context = {'object_id': self.object_id,
+        self.context = Context({'object_id': self.object_id,
                         'content_type_id': self.content_type_id,
-                        'site_id': self.site_id}
+                        'site_id': self.site_id})
 
         original_size = ImageSize(name=ImageSize.ORIGINAL)
         original_size.save()
