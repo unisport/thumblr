@@ -102,7 +102,7 @@ AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
 AWS_THUMBLR_BUCKET = os.environ.get('AWS_THUMBLR_BUCKET', 'thumblr-testing')
 
-REDIS_SERVER = os.environ.get('REDIS_SERVER', 'localhost')
+REDIS_SERVER = os.environ.get('REDIS_SERVER', '127.0.0.1')
 REDIS_PORT = os.environ.get('REDIS_PORT', 6379)
 
 CACHES = {
@@ -112,6 +112,8 @@ CACHES = {
     'thumblr': {
         'BACKEND': 'redis_cache.cache.RedisCache',
         'LOCATION': '{ip}:{port}:0'.format(ip=REDIS_SERVER, port=REDIS_PORT),
-        'KEY_PREFIX': 'thumblr_cache_',
+        'OPTIONS': {
+            'KEY_PREFIX': 'thumblr_cache_',
+        },
     }
 }

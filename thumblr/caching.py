@@ -2,9 +2,12 @@ from django.core.cache import get_cache, cache, InvalidCacheBackendError
 
 
 try:
-    thumblr_cache = get_cache('thubmlr')
+    thumblr_cache = get_cache('thumblr')
 except InvalidCacheBackendError:
     thumblr_cache = cache
+
+# pinging on cache
+thumblr_cache.get("FOO")
 
 
 def cached(f):
