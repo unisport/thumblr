@@ -108,5 +108,11 @@ First ensure that you have a valid ssh keys. Than install the application with:
 
         {% load thumblr_tags %}
         {% thumblr 'boots.jpg' size='original' %}
-            
+        
+        
+        {% thumblr_imgs original as imgs %}
+        {% for img_url in imgs %}
+            {{ img_url }}
+        {% endfor %}
+        
     
