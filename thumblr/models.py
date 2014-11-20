@@ -97,7 +97,16 @@ class ImageFile(models.Model):
 
     @classmethod
     def get_q(cls, image_spec):
+        assert isinstance(image_spec, ImageMetadata)
+
         q = Q()
+
+        if not image_spec.image_file_id is None:
+            q &= Q(pk=image_spec.image_file_id)
+
+        if not image_spec.image_hash is None:
+            q &= Q(image_hash=image_spec.image_hash)
+
         if not image_spec.size_slug is None:
             q &= Q(size__name=image_spec.size_slug)
 
