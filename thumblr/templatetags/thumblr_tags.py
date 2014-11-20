@@ -55,10 +55,12 @@ class ImagesNode(template.Node):
         self.object_id = object_id
 
     def render(self, context):
-        images = ImageFile.objects.filter(image__site_id=self.site_id if None else context['site_id'],
-                                          image__content_type_id=self.content_type_id if None else context['content_type_id'],
-                                          image__object_id=self.object_id if None else context['object_id'],
-                                          size__name=self.size)
+        images = ImageFile.objects.filter(
+            image__site_id=self.site_id if self.site_id else context.get('site_id'),
+            image__content_type_id=self.content_type_id if self.content_type_id else context.get(
+                'content_type_id'),
+            image__object_id=self.object_id if self.object_id else context.get('object_id'),
+            size__name=self.size)
         """
         render updates context of the template and adds new variable with var_name that contains images
         """
