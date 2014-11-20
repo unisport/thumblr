@@ -1,19 +1,20 @@
+import os
+
 from django import template
 from django.core.files import File
 from django.template import Token, TOKEN_TEXT, Context
-from django.template.context import BaseContext, RenderContext
 from django.test import TestCase
 from mock import MagicMock
-import os
+
 from thumblr import usecases
 from thumblr.dto import ImageMetadata
-from thumblr.models import ImageSize, ImageFile
-from thumblr.templatetags.thumblr_tags import thumblr_tag_parser, ThumblrNode, thumblr_imgs, ImagesNode
+from thumblr.models import ImageSize
+from thumblr.templatetags.thumblr_tags import thumblr_imgs, ImagesNode
 
 
 class TestThumblrImgsTagParser(TestCase):
     def test_basic_usage(self):
-        token = Token(TOKEN_TEXT, "thumblr_imgs large as images")
+        token = Token(TOKEN_TEXT, "thumblr_imgs size='large' as images")
         node = thumblr_imgs(None, token)
 
         self.assertIsInstance(node, ImagesNode)
@@ -51,7 +52,7 @@ class TestThumblrImgsNode(TestCase):
             )
 
     def test_basic_usage(self):
-        token = Token(TOKEN_TEXT, "thumblr_imgs original as images")
+        token = Token(TOKEN_TEXT, "thumblr_imgs size='original' as images")
         node = thumblr_imgs(MagicMock(), token)
         context = self.context
         node.render(context)
@@ -63,12 +64,24 @@ class TestThumblrImgsNode(TestCase):
     def test_in_template(self):
         t = template.Template(u"""
             {% load thumblr_tags %}
-            {% thumblr_imgs original as imgs %}
+            {% thumblr_imgs size='original' as imgs %}
             {% for img_url in imgs %}
                 {{ img_url }}
             {% endfor %}
         """)
         res = t.render(Context(self.context))
         print(res)
+        self.assertIn(u"unisport.dk", res)  # it MUST be cdn url, not s3
+        self.assertNotIn(u"boots.jpg", res)  # it MUST be hash, not file name
+
+    def test_in_template_with_arguments(self):
+        t = template.Template(u"""
+            {%% load thumblr_tags %%}
+            {%% thumblr_imgs size='original' site_id=%s content_type_id=%s object_id=%s as imgs %%}
+            {%% for img_url in imgs %%}
+                {{ img_url }}
+            {%% endfor %%}
+        """ % (self.site_id, self.content_type_id, self.object_id))
+        res = t.render(Context())
         self.assertIn(u"unisport.dk", res)  # it MUST be cdn url, not s3
         self.assertNotIn(u"boots.jpg", res)  # it MUST be hash, not file name

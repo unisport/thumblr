@@ -109,8 +109,16 @@ First ensure that you have a valid ssh keys. Than install the application with:
         {% load thumblr_tags %}
         {% thumblr 'boots.jpg' size='original' %}
         
+    In case if site_id, content_type_id, object_id is in template context
+    
+        {% thumblr_imgs size='original' as imgs %}
+        {% for img_url in imgs %}
+            {{ img_url }}
+        {% endfor %}
         
-        {% thumblr_imgs original as imgs %}
+    It's also possible to use size, site_id, content_type_id, object_id as an additional argument
+    
+        {% thumblr_imgs size='original' site_id=1 content_type_id=8 object_id=443 as imgs %}
         {% for img_url in imgs %}
             {{ img_url }}
         {% endfor %}
