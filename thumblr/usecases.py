@@ -4,8 +4,12 @@ data transfer objects)
 
 from django.db.transaction import atomic
 from thumblr.dto import ImageMetadata
-from thumblr.services.image_file_service import create_image_file, get_image_file_by_spec, get_image_file_url
+from thumblr.services.image_file_service import create_image_file, get_image_file_by_spec, get_image_file_url, \
+    replace_uploaded_image
 from thumblr.services.image_service import create_image
+
+
+__all__ = ['add_image', 'get_image_file_url', 'update_image']
 
 
 @atomic
@@ -26,4 +30,16 @@ def get_image_url(image_metadata_spec, url_spec):
     return get_image_file_url(image_file, url_spec)
 
 
+@atomic
+def update_image(new_file, image_metadata):
+    """Updates image specified by image_metadata spec with new_file.
+       new_file - should be instance of django File
+       image_metadata - ImageMetadata
+    """
+    assert isinstance(image_metadata, ImageMetadata)
+
+    image_file = get_image_file_by_spec(image_metadata)
+    replace_uploaded_image(image_file, new_file)
+
+    return image_file
 

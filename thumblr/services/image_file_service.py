@@ -21,6 +21,11 @@ def create_image_file(uploaded_file, image_metadata, image_inst):
     return image_file
 
 
+def replace_uploaded_image(image_file, new_uploaded_image):
+    image_file.image_in_storage = new_uploaded_image
+    image_file.save()
+
+
 def get_image_file_by_spec(image_spec):
     assert isinstance(image_spec, ImageMetadata)
 
