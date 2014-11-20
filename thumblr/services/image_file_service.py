@@ -1,3 +1,4 @@
+from thumblr.caching import cached
 from thumblr.dto import ImageMetadata, ImageUrlSpec
 from thumblr.exceptions import NoSuchImageException, IncorrectUrlSpecException
 from thumblr.models import ImageFile, Image, ImageSize
@@ -41,7 +42,10 @@ def get_image_file_by_spec(image_spec):
     return image_file
 
 
+@cached
 def get_image_file_url(image_file, url_spec):
+    assert isinstance(image_file, ImageFile)
+
     if url_spec == ImageUrlSpec.S3_URL:
         return image_file.image_hash_in_storage.url
     elif url_spec == ImageUrlSpec.CDN_URL:

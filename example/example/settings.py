@@ -101,3 +101,17 @@ MEDIA_ROOT = os.path.join(os.path.dirname(__file__), "..", "..", "media")
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
 AWS_THUMBLR_BUCKET = os.environ.get('AWS_THUMBLR_BUCKET', 'thumblr-testing')
+
+REDIS_SERVER = os.environ.get('REDIS_SERVER', 'localhost')
+REDIS_PORT = os.environ.get('REDIS_PORT', 6379)
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+    'thumblr': {
+        'BACKEND': 'redis_cache.cache.RedisCache',
+        'LOCATION': '{ip}:{port}:0'.format(ip=REDIS_SERVER, port=REDIS_PORT),
+        'KEY_PREFIX': 'thumblr_cache_',
+    }
+}
