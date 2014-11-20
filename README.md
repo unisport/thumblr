@@ -20,7 +20,7 @@ The table in which such data is saved could have the following attributes.
 
 The images could then be retrieved using a simple query like:
 
-    Images.objects.filter(content_type='articles', object_id=article_id, site_id=site_id) 
+        Images.objects.filter(content_type='articles', object_id=article_id, site_id=site_id) 
 
 Such a system should allow us to save any type of file. 
 
@@ -61,3 +61,66 @@ I'm thinking it could be useful if we split responsibility into 2-3 subsystems.
 So in phase 1 we want an app that exposes the api described above, with which we can use to create phase 2. 
 
 The most important aspect for us is that we have a standardized API that we can further extend when the need arises. 
+
+####Installation
+First ensure that you have a valid ssh keys. Than install the application with:
+
+        pip install git+ssh://git@github.com/unisport/thumblr.git
+
+####Setup
+1. Add thumblr to installed apps:
+
+        INSTALLED_APPS = (
+          ...
+          'thumblr',
+        )
+    
+2. Include thumblr's urls to your urls.py:
+
+        url(r'^thumblr/', include('thumblr.urls', namespace='thumblr')),
+
+3. Add environment variables related to AWS and S3 bucket
+        
+        AWS_ACCESS_KEY_ID="..."
+        AWS_SECRET_ACCESS_KEY="..."
+        AWS_THUMBLR_BUCKET="..."
+        
+####Usage
+ 
+1. To insert image:
+
+        from django.core.files import File
+        from thumblr.models import ImageSize
+        from thumblr.dto import ImageMetadata
+        from thumblr.usecases import add_image
+        
+        image = File(open('boots.jpg'))
+        image_metadata = ImageMetadata(
+                file_name='boots.jpg',
+                site_id=3,
+                size_slug=ImageSize.ORIGINAL,
+                content_type_id=5,
+                object_id=11,
+            )
+        add_image(image, image_metadata)
+        
+2. To use the image into template use template tags:
+
+        {% load thumblr_tags %}
+        {% thumblr 'boots.jpg' size='original' %}
+        
+    In case if site_id, content_type_id, object_id is in template context
+    
+        {% thumblr_imgs size='original' as imgs %}
+        {% for img_url in imgs %}
+            {{ img_url }}
+        {% endfor %}
+        
+    It's also possible to use size, site_id, content_type_id, object_id as an additional argument
+    
+        {% thumblr_imgs size='original' site_id=1 content_type_id=8 object_id=443 as imgs %}
+        {% for img_url in imgs %}
+            {{ img_url }}
+        {% endfor %}
+        
+    

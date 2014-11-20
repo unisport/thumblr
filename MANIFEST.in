@@ -1,0 +1,9 @@
+include README.md
+
+recursive-include thumblr/migrations *
+recursive-include thumblr/services *
+recursive-include thumblr/templetags *
+recursive-include thumblr/utils *
+recursive-include thumblr/tests *
+
+global-exclude *.pyc
