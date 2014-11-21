@@ -87,7 +87,7 @@ class ImageFile(models.Model):
     image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash = models.CharField(max_length=256)
-    size = models.OneToOneField(ImageSize)
+    size = models.ForeignKey(ImageSize)
     meta_data = JSONField(null=True, blank=True)
 
     def __str__(self):
