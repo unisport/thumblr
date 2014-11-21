@@ -3,6 +3,7 @@ data transfer objects)
 """
 
 from django.db.transaction import atomic
+from thumblr.caching import cached
 from thumblr.dto import ImageMetadata
 from thumblr.services.image_file_service import create_image_file, get_image_file_by_spec, get_image_file_url, \
     replace_uploaded_image
@@ -22,6 +23,7 @@ def add_image(uploaded_file, image_metadata):
     return image, image_file
 
 
+@cached
 def get_image_url(image_metadata_spec, url_spec):
     assert isinstance(image_metadata_spec, ImageMetadata)
 

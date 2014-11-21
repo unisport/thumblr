@@ -1,6 +1,7 @@
 import StringIO
 import random
 import string
+from django.conf import settings
 from django.core.cache import get_cache
 from django.core.files.base import File
 from thumblr import caching
@@ -8,8 +9,8 @@ from thumblr.dto import ImageUrlSpec, ImageMetadata
 from thumblr import usecases
 from thumblr.models import ImageSize
 from thumblr.perf_tests.utils.profile import profile
+from thumblr.perf_tests.utils.sql import log_sql
 from thumblr.perf_tests.utils.timer import timer
-from thumblr.services.image_file_service import get_image_file_url
 from thumblr.tests.base import BaseThumblrTestCase
 from mock import patch
 
@@ -23,6 +24,9 @@ class TestCachingImageUrls(BaseThumblrTestCase):
         return ''.join(random.choice(string.ascii_lowercase) for _ in xrange(10))
 
     def setUp(self):
+        # hack to force logging sql
+        settings.DEBUG = True
+
         super(TestCachingImageUrls, self).setUp()
 
         self.tmp_images = []
@@ -49,21 +53,24 @@ class TestCachingImageUrls(BaseThumblrTestCase):
         dummy_cache.clear()
 
         with patch.object(caching, 'thumblr_cache', dummy_cache):
-            with profile():
-                with timer('Image CDN url generation. Caching DISABLED x{iters} iters.'.format(iters=self.ITERATIONS)):
-                    for i in xrange(self.ITERATIONS):
-                        image_file = self.tmp_images[random.randint(0, self.TMP_FILES - 1)]
-                        get_image_file_url(image_file, ImageUrlSpec.CDN_URL)
+            with log_sql(), \
+                 profile(), \
+                 timer('Image CDN url generation. Caching DISABLED x{iters} iters.'.format(iters=self.ITERATIONS)):
 
-        from django.db import connection
-        print(connection.queries)
-
-    def test_cached(self):
-        with profile():
-            with timer('Image CDN url generation. Caching ENABLED x{iters} iters.'.format(iters=self.ITERATIONS)):
                 for i in xrange(self.ITERATIONS):
                     image_file = self.tmp_images[random.randint(0, self.TMP_FILES - 1)]
-                    get_image_file_url(image_file, ImageUrlSpec.CDN_URL)
+                    usecases.get_image_url(
+                        ImageMetadata(image_file_id=image_file.id),
+                        ImageUrlSpec.CDN_URL
+                    )
 
-        from django.db import connection
-        print(connection.queries)
+    def test_cached(self):
+        with log_sql(),\
+             profile(),\
+             timer('Image CDN url generation. Caching ENABLED x{iters} iters.'.format(iters=self.ITERATIONS)):
+            for i in xrange(self.ITERATIONS):
+                image_file = self.tmp_images[random.randint(0, self.TMP_FILES - 1)]
+                usecases.get_image_url(
+                    ImageMetadata(image_file_id=image_file.id),
+                    ImageUrlSpec.CDN_URL
+                )
