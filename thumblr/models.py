@@ -24,7 +24,9 @@ s3 = S3Storage(
 
 class Image(models.Model):
 
-    site = models.ForeignKey(Site, null=False, default=1)
+    # site is optional here. Pictures should be available across all sites.
+    # I left it here in case the product is dedicated to one specific country's site
+    site = models.ForeignKey(Site, null=True)
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.PositiveIntegerField(null=True, blank=True)
     content_object = GenericForeignKey('content_type', 'object_id')
