@@ -1,3 +1,4 @@
+from thumblr.caching import cached
 from thumblr.dto import ImageMetadata, ImageUrlSpec
 from thumblr.exceptions import NoSuchImageException, IncorrectUrlSpecException
 from thumblr.models import ImageFile, Image, ImageSize
@@ -26,8 +27,28 @@ def replace_uploaded_image(image_file, new_uploaded_image):
     image_file.save()
 
 
+def get_image_file_by_id(image_file_id):
+    try:
+        return ImageFile.objects.get(pk=image_file_id)
+    except ImageFile.DoesNotExist:
+        raise NoSuchImageException()
+
+
+def get_image_file_by_hash(image_hash):
+    try:
+        return ImageFile.objects.get(image_hash=image_hash)
+    except ImageFile.DoesNotExist:
+        raise NoSuchImageException()
+
+
 def get_image_file_by_spec(image_spec):
     assert isinstance(image_spec, ImageMetadata)
+
+    if not image_spec.image_file_id is None:
+        return get_image_file_by_id(image_spec.image_file_id)
+
+    if not image_spec.image_hash is None:
+        return get_image_file_by_hash(image_spec.image_hash)
 
     image = get_image_by_spec(image_spec)
 
@@ -42,6 +63,8 @@ def get_image_file_by_spec(image_spec):
 
 
 def get_image_file_url(image_file, url_spec):
+    assert isinstance(image_file, ImageFile)
+
     if url_spec == ImageUrlSpec.S3_URL:
         return image_file.image_hash_in_storage.url
     elif url_spec == ImageUrlSpec.CDN_URL:
