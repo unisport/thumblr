@@ -21,13 +21,10 @@ class ImageMetadata(object):
         self.size_slug = size_slug
 
     def __str__(self):
-        return "{image_file_id}::{file_name}::{size}::{site_id}::{content_type}::{object_id}".format(
+        return "{image_file_id}::{file_name}::{size}".format(
             image_file_id=self.image_file_id,
             file_name=self.original_file_name,
             size=self.size_slug,
-            site_id=self.site_id,
-            content_type=self.content_type_id,
-            object_id=self.object_id,
         )
 
 
