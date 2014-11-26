@@ -2,11 +2,12 @@ import StringIO
 from PIL import Image
 from django.test import TestCase
 import os
+from thumblr.tests.base import TuplesCompareMixin
 from thumblr.utils import pil_processing
 from thumblr.utils.pil_processing import ImageDim, ImagePos
 
 
-class TestSquarify(TestCase):
+class TestSquarify(TestCase, TuplesCompareMixin):
 
     def setUp(self):
         self.image_file_path = os.path.join(
@@ -31,9 +32,8 @@ class TestSquarify(TestCase):
         ))
 
         # uncomment for local testing, could be a bad thing for automated CI
-        # if squared_image.size != squared_etalon.size:
-        #     squared_etalon.show()
-        #     squared_image.show()
+        # squared_etalon.show()
+        # squared_image.show()
 
         # No side effect, no change to image in parameter
         self.assertNotEqual(
@@ -41,14 +41,21 @@ class TestSquarify(TestCase):
             squared_image.size
         )
 
-        # Result image have correct size, TODO: needed more clever image comparision to etalon
         self.assertEqual(
             squared_image.size,
             squared_etalon.size,
         )
 
+        for x in xrange(10, 900, 50):
+            for y in xrange(10, 420, 50):
+                self.assertAlmostEqualTuples(
+                    squared_image.getpixel((x, y)),
+                    squared_etalon.getpixel((x, y)),
+                    delta=25,  # means: more or less colors are the same
+                )
 
-class TestOverlay(TestCase):
+
+class TestOverlay(TestCase, TuplesCompareMixin):
 
     def setUp(self):
         self.image_file_path = os.path.join(
@@ -91,8 +98,21 @@ class TestOverlay(TestCase):
             self.squared_thumbnail,
         )
 
-        # stupid test, need more clever thing
+        # verify same size and some key pixels colors
         self.assertEqual(
             self.boots_pil_image.size,
             result_image.size,
         )
+
+        self.assertAlmostEqualTuples(
+            self.boots_pil_image.getpixel((450, 250)),
+            result_image.getpixel((450, 250)),
+            delta=5,
+        )
+
+        self.assertAlmostEqualTuples(
+            self.squared_thumbnail.getpixel((50, 50)),
+            result_image.getpixel((100, 100)),
+            delta=5,
+        )
+
