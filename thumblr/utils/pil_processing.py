@@ -60,3 +60,13 @@ def overlay(original_img, overlay_img, position=ImagePos(x=0, y=0)):
     res_image.paste(overlay_img, position)
 
     return res_image
+
+
+def thumbnail(original_img, thumbnail_size=ImageDim(width=100, height=100)):
+    assert isinstance(original_img, Image.Image)
+
+    res_image = original_img.copy()
+    res_image.thumbnail(thumbnail_size, Image.ANTIALIAS)
+
+    return res_image
+

@@ -116,3 +116,43 @@ class TestOverlay(TestCase, TuplesCompareMixin):
             delta=5,
         )
 
+
+class TestThumbnail(TestCase, TuplesCompareMixin):
+
+    def setUp(self):
+        self.image_file_path = os.path.join(
+            os.path.dirname(__file__), "..", "data", "rect_img.jpg"
+        )
+
+        file_content = None
+        with open(self.image_file_path) as f:
+             file_content = f.read()
+
+        self.image_data = StringIO.StringIO(file_content)
+        self.boots_pil_image = Image.open(self.image_data)
+
+        self.thumbnail_etalon = Image.open(os.path.join(
+            os.path.dirname(__file__), "..", "data", "rect_img_thumbnail_100x100.jpg"
+        ))
+
+    def test_basic(self):
+        thumbnail = pil_processing.thumbnail(
+            self.boots_pil_image,
+            ImageDim(width=100, height=100)
+        )
+
+        # thumbnail.show()
+
+        self.assertEqual(
+            thumbnail.size,
+            self.thumbnail_etalon.size
+        )
+
+        for x in xrange(5, thumbnail.size[0], 10):
+            for y in xrange(5, thumbnail.size[1], 10):
+                self.assertAlmostEqualTuples(
+                    thumbnail.getpixel((x, y)),
+                    self.thumbnail_etalon.getpixel((x, y)),
+                    delta=30,  # the smaller thumbnail => the bigger color deviation
+                )
+
