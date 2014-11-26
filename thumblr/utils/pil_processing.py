@@ -1,9 +1,16 @@
+"""
+Each (new) function in this file dream to be side-effect-free:
+ - does not change any of argument
+ - copy image if it needed to be changed and then return copy
+"""
+
 from collections import namedtuple
 import math
 from PIL import Image
 
 
 ImageDim = namedtuple('ImageDim', ['width', 'height'])
+ImagePos = namedtuple('ImagePos', ['x', 'y'])
 
 
 def squarify(original_img, result_size=ImageDim(width=1000, height=1000)):
@@ -44,3 +51,12 @@ def squarify(original_img, result_size=ImageDim(width=1000, height=1000)):
         square_image.thumbnail(result_size, Image.ANTIALIAS)
 
     return square_image
+
+
+def overlay(original_img, overlay_img, position=ImagePos(x=0, y=0)):
+    assert isinstance(original_img, Image.Image)
+
+    res_image = original_img.copy()
+    res_image.paste(overlay_img, position)
+
+    return res_image
