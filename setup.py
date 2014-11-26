@@ -23,9 +23,11 @@ setup(
     ],
     install_requires=['django>=1.6.0',
                       'south>=0.8',
+                      'django-boto==0.3.5',
                       'boto>=2.0.',
                       'jsonfield>=1',
                       'Pillow>=2',
                       'celery>3',
+                      'python-dateutil==2.2'
                       ],
 )

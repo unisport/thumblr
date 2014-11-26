@@ -1,13 +1,8 @@
 Django==1.6.8
-South==0.8.4
-
 boto==2.34.0
 django-boto==0.3.5
-# django-storages==1.1.8
-
+South==0.8.4
 jsonfield==1.0.0
-
 Pillow==2.6.1
-
 celery==3.1.16
 python-dateutil==2.2
