@@ -42,3 +42,10 @@ class BaseThumblrTestCase(TestCase):
     def tearDown(self):
         Image.objects.all().delete()
         ImageSize.objects.all().delete()
+
+
+class TuplesCompareMixin(object):
+
+    def assertAlmostEqualTuples(self, a, b, delta=1):
+        for x, y in zip(a, b):
+            self.assertAlmostEqual(x, y, delta=delta)
