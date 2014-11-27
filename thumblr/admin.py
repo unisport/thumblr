@@ -15,14 +15,14 @@ class ImageFileAdmin(admin.ModelAdmin):
 
     def cdn_url(self, obj):
         return mark_safe(
-            u"<a href='{url}'>{url}</a>".format(
+            u"<a target='_blank' href='{url}'>{url}</a>".format(
                 url=get_image_file_url(obj, ImageUrlSpec.CDN_URL)
             )
         )
 
     def s3_url(self, obj):
         return mark_safe(
-            u"<a href='{url}'>{url}</a>".format(
+            u"<a target='_blank' href='{url}'>{url}</a>".format(
                 url=get_image_file_url(obj, ImageUrlSpec.S3_URL)
             )
         )

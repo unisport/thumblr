@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
@@ -25,14 +24,17 @@ s3 = S3Storage(
 
 class Image(models.Model):
 
-    site = models.ForeignKey(Site, null=False, default=1)
+    # site is optional here. Pictures should be available across all sites.
+    # I left it here in case the product is dedicated to one specific country's site
+    site = models.ForeignKey(Site, null=True)
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.PositiveIntegerField(null=True, blank=True)
     content_object = GenericForeignKey('content_type', 'object_id')
     original_file_name = models.CharField(max_length=256)
 
     def __str__(self):
-        return "{file_name} [{site}]".format(
+        return "{image_id}::{file_name}::{site}".format(
+            image_id=self.id,
             file_name=self.original_file_name,
             site=self.site.name,
         )
@@ -63,16 +65,22 @@ class ImageSize(models.Model):
     ORIGINAL = 'original'
 
     name = models.CharField(max_length=30, primary_key=True)
-    max_width = models.IntegerField(null=True, blank=True)
-    max_height = models.IntegerField(null=True, blank=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
 
 
 def upload_to(inst, filename):
-    return 'images/{date}/{filename}'.format(date=datetime.today().strftime("%d-%m-%Y"),
-                                             filename=ntpath.basename(filename))
+    assert isinstance(inst, ImageFile)
+
+    # object id used to enalbe uploading of file of same names
+    return u'{content_type}/{object_id}/{filename}'.format(
+        content_type=inst.image.content_type.name.replace(u" ", u"_"),
+        object_id=inst.image.object_id,
+        filename=ntpath.basename(filename)
+    )
 
 
 class ImageFile(models.Model):
@@ -81,18 +89,29 @@ class ImageFile(models.Model):
     image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash = models.CharField(max_length=256)
-    size = models.OneToOneField(ImageSize)
+    size = models.ForeignKey(ImageSize)
     meta_data = JSONField(null=True, blank=True)
 
     def __str__(self):
-        return "{file_name} [{hash}]".format(
+        return "{image_file_id}::{file_name}::{size}::{hash}".format(
             file_name=self.image.original_file_name,
-            hash=self.image_hash
+            hash=self.image_hash,
+            image_file_id=self.id,
+            size=self.size.name,
         )
 
     @classmethod
     def get_q(cls, image_spec):
+        assert isinstance(image_spec, ImageMetadata)
+
         q = Q()
+
+        if not image_spec.image_file_id is None:
+            q &= Q(pk=image_spec.image_file_id)
+
+        if not image_spec.image_hash is None:
+            q &= Q(image_hash=image_spec.image_hash)
+
         if not image_spec.size_slug is None:
             q &= Q(size__name=image_spec.size_slug)
 

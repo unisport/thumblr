@@ -8,20 +8,14 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'ImageFile.old'
-        db.delete_column(u'thumblr_imagefile', 'old')
 
+        # Changing field 'Image.site'
+        db.alter_column(u'thumblr_image', 'site_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['sites.Site'], null=True))
 
     def backwards(self, orm):
 
-        # User chose to not deal with backwards NULL issues for 'ImageFile.old'
-        raise RuntimeError("Cannot reverse this migration. 'ImageFile.old' and its values cannot be restored.")
-        
-        # The following code is provided here to aid in writing a correct migration        # Adding field 'ImageFile.old'
-        db.add_column(u'thumblr_imagefile', 'old',
-                      self.gf('django.db.models.fields.CharField')(max_length=256),
-                      keep_default=False)
-
+        # Changing field 'Image.site'
+        db.alter_column(u'thumblr_image', 'site_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['sites.Site']))
 
     models = {
         u'contenttypes.contenttype': {
@@ -43,7 +37,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'original_file_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'site': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['sites.Site']"})
+            'site': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sites.Site']", 'null': 'True'})
         },
         u'thumblr.imagefile': {
             'Meta': {'object_name': 'ImageFile'},
@@ -52,7 +46,7 @@ class Migration(SchemaMigration):
             'image_hash': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'image_hash_in_storage': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
             'image_in_storage': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
-            'meta_data': ('jsonfield.fields.JSONField', [], {'null': 'True'}),
+            'meta_data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
             'size': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['thumblr.ImageSize']", 'unique': 'True'})
         },
         u'thumblr.imagesize': {
