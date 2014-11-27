@@ -31,8 +31,8 @@ class TestThumblrImgsNode(TestCase):
         self.content_type_id = 1
         self.object_id = 1
         self.context = Context({'object_id': self.object_id,
-                        'content_type_id': self.content_type_id,
-                        'site_id': self.site_id})
+                                'content_type_id': self.content_type_id,
+                                'site_id': self.site_id})
 
         original_size = ImageSize(name=ImageSize.ORIGINAL)
         original_size.save()
@@ -57,6 +57,7 @@ class TestThumblrImgsNode(TestCase):
         context = self.context
         node.render(context)
         self.assertIn('images', context, 'Key images should be in context')
+        self.assertGreater(len(context['images']), 0, "No images were returned")
         self.assertIn('4d6d69494a4f.jpg',
                       context['images'][0],
                       msg="Test image wasn't found in context tag")

@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     #'south',
     'thumblr',
+    'django_tables2',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -60,6 +61,7 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.request',
 )
 
 ROOT_URLCONF = 'example.urls'
@@ -117,12 +119,12 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
-    #'thumblr': {
-    #    'BACKEND': 'redis_cache.cache.RedisCache',
-    #    'LOCATION': '{ip}:{port}:0'.format(ip=REDIS_SERVER, port=REDIS_PORT),
-    #    'OPTIONS': {
-    #        'KEY_PREFIX': 'thumblr_cache_',
-    #    },
-    #}
-}
 
+    # 'thumblr': {
+    #     'BACKEND': 'redis_cache.cache.RedisCache',
+    #     'LOCATION': '{ip}:{port}:0'.format(ip=REDIS_SERVER, port=REDIS_PORT),
+    #     'OPTIONS': {
+    #         'KEY_PREFIX': 'thumblr_cache_',
+    #     },
+    # }
+}
