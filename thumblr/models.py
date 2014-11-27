@@ -32,11 +32,10 @@ class Image(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     original_file_name = models.CharField(max_length=256)
 
-    def __str__(self):
-        return "{image_id}::{file_name}::{site}".format(
-            image_id=self.id,
-            file_name=self.original_file_name,
-            site=self.site.name,
+    def __unicode__(self):
+        return u"%s::%s::%s" % (self.id,
+                                self.original_file_name,
+                                self.site.name,
         )
 
     @classmethod
@@ -67,11 +66,12 @@ class ImageSize(models.Model):
     name = models.CharField(max_length=30, primary_key=True)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
-
     content_types = models.ManyToManyField(ContentType, related_name="image_sizes")
+    
+    def __unicode__(self):
+        return '%s' % self.name
 
-    def __str__(self):
-        return self.name
+
 
 
 def upload_to(inst, filename):
@@ -94,12 +94,12 @@ class ImageFile(models.Model):
     size = models.ForeignKey(ImageSize)
     meta_data = JSONField(null=True, blank=True)
 
-    def __str__(self):
-        return "{image_file_id}::{file_name}::{size}::{hash}".format(
-            file_name=self.image.original_file_name,
-            hash=self.image_hash,
-            image_file_id=self.id,
-            size=self.size.name,
+    def __unicode__(self):
+        return u"%s::%s::%s::%s".format(
+            self.image.original_file_name,
+            self.image_hash,
+            self.id,
+            self.size.name
         )
 
     @classmethod
