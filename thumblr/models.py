@@ -68,6 +68,8 @@ class ImageSize(models.Model):
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
 
+    content_types = models.ManyToManyField(ContentType, related_name="image_sizes")
+
     def __str__(self):
         return self.name
 
