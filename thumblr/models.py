@@ -33,7 +33,8 @@ class Image(models.Model):
     original_file_name = models.CharField(max_length=256)
 
     def __str__(self):
-        return "{file_name} [{site}]".format(
+        return "{image_id}::{file_name}::{site}".format(
+            image_id=self.id,
             file_name=self.original_file_name,
             site=self.site.name,
         )
@@ -67,6 +68,8 @@ class ImageSize(models.Model):
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
 
+    content_types = models.ManyToManyField(ContentType, related_name="image_sizes")
+
     def __str__(self):
         return self.name
 
@@ -88,18 +91,29 @@ class ImageFile(models.Model):
     image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash = models.CharField(max_length=256)
-    size = models.OneToOneField(ImageSize)
+    size = models.ForeignKey(ImageSize)
     meta_data = JSONField(null=True, blank=True)
 
     def __str__(self):
-        return "{file_name} [{hash}]".format(
+        return "{image_file_id}::{file_name}::{size}::{hash}".format(
             file_name=self.image.original_file_name,
-            hash=self.image_hash
+            hash=self.image_hash,
+            image_file_id=self.id,
+            size=self.size.name,
         )
 
     @classmethod
     def get_q(cls, image_spec):
+        assert isinstance(image_spec, ImageMetadata)
+
         q = Q()
+
+        if not image_spec.image_file_id is None:
+            q &= Q(pk=image_spec.image_file_id)
+
+        if not image_spec.image_hash is None:
+            q &= Q(image_hash=image_spec.image_hash)
+
         if not image_spec.size_slug is None:
             q &= Q(size__name=image_spec.size_slug)
 

@@ -8,15 +8,31 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'ImageFile.image_hash_in_storage'
-        db.add_column(u'thumblr_imagefile', 'image_hash_in_storage',
-                      self.gf('django.db.models.fields.files.ImageField')(default='old.jpg', max_length=100),
-                      keep_default=False)
+        # Removing unique constraint on 'ImageFile', fields ['size']
+        db.delete_unique(u'thumblr_imagefile', ['size_id'])
 
+        # Adding M2M table for field content_types on 'ImageSize'
+        m2m_table_name = db.shorten_name(u'thumblr_imagesize_content_types')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('imagesize', models.ForeignKey(orm[u'thumblr.imagesize'], null=False)),
+            ('contenttype', models.ForeignKey(orm[u'contenttypes.contenttype'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['imagesize_id', 'contenttype_id'])
+
+
+        # Changing field 'ImageFile.size'
+        db.alter_column(u'thumblr_imagefile', 'size_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['thumblr.ImageSize']))
 
     def backwards(self, orm):
-        # Deleting field 'ImageFile.image_hash_in_storage'
-        db.delete_column(u'thumblr_imagefile', 'image_hash_in_storage')
+        # Removing M2M table for field content_types on 'ImageSize'
+        db.delete_table(db.shorten_name(u'thumblr_imagesize_content_types'))
+
+
+        # Changing field 'ImageFile.size'
+        db.alter_column(u'thumblr_imagefile', 'size_id', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['thumblr.ImageSize'], unique=True))
+        # Adding unique constraint on 'ImageFile', fields ['size']
+        db.create_unique(u'thumblr_imagefile', ['size_id'])
 
 
     models = {
@@ -35,11 +51,11 @@ class Migration(SchemaMigration):
         },
         u'thumblr.image': {
             'Meta': {'object_name': 'Image'},
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']", 'null': 'True'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']", 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True'}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'original_file_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'site': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['sites.Site']"})
+            'site': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sites.Site']", 'null': 'True'})
         },
         u'thumblr.imagefile': {
             'Meta': {'object_name': 'ImageFile'},
@@ -48,15 +64,15 @@ class Migration(SchemaMigration):
             'image_hash': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'image_hash_in_storage': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
             'image_in_storage': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
-            'meta_data': ('jsonfield.fields.JSONField', [], {'null': 'True'}),
-            'old': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'meta_data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
             'size': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['thumblr.ImageSize']"})
         },
         u'thumblr.imagesize': {
             'Meta': {'object_name': 'ImageSize'},
-            'max_height': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
-            'max_width': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'primary_key': 'True'})
+            'content_types': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'image_sizes'", 'symmetrical': 'False', 'to': u"orm['contenttypes.ContentType']"}),
+            'height': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'primary_key': 'True'}),
+            'width': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         }
     }
 

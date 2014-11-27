@@ -64,3 +64,6 @@ example/db.sqlite3
 
 # media root
 media/
+
+# mac os
+**/.DS_Store
