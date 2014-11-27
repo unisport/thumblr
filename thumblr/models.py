@@ -64,8 +64,8 @@ class ImageSize(models.Model):
     ORIGINAL = 'original'
 
     name = models.CharField(max_length=30, primary_key=True)
-    max_width = models.IntegerField(null=True, blank=True)
-    max_height = models.IntegerField(null=True, blank=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
