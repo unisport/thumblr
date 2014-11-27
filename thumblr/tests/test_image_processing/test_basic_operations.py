@@ -84,6 +84,7 @@ class TestOverlay(TestCase, TuplesCompareMixin):
         result_image = basic_operations.overlay(
             self.boots_pil_image, self.squared_thumbnail,
             ImagePos(x=50, y=50),
+            mask=False,
         )
 
         # uncomment to check result for local testing, could be a bad thing for automated CI
@@ -146,7 +147,7 @@ class TestThumbnail(TestCase, TuplesCompareMixin):
 
         self.assertEqual(
             thumbnail.size,
-            self.thumbnail_etalon.size
+            self.thumbnail_etalon.size,
         )
 
         for x in xrange(5, thumbnail.size[0], 10):

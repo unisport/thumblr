@@ -3,8 +3,8 @@ from cStringIO import StringIO
 
 from PIL.Image import Image
 from django.conf import settings
-from . import pil_processing
-from thumblr.image_processing.pil_processing import ImagePos
+from . import basic_operations
+from thumblr.image_processing.basic_operations import ImagePos
 
 
 BUBBLE_PATH = "{media_url}images/sparbobler/".format(media_url=settings.MEDIA_URL)
@@ -46,15 +46,19 @@ def get_watermark_image_for(site_id):
 
 
 def put_bubble_on_image(image, percentage):
-    bubble_image = get_bubble_url_for(percentage)
-    result_image = pil_processing.overlay(image, bubble_image, ImagePos(x=5, y=5))
+    bubble_image = get_bubble_image_for(percentage)
+    result_image = basic_operations.overlay(
+        image,
+        bubble_image,
+        ImagePos(x=5, y=5)
+    )
 
     return result_image
 
 
 def put_watermark_on_image(image, site_id):
     watermark_image = get_watermark_image_for(site_id)
-    result_image = pil_processing.overlay(
+    result_image = basic_operations.overlay(
         image,
         watermark_image,
         ImagePos(

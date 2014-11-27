@@ -53,11 +53,22 @@ def squarify(original_img, result_size=ImageDim(width=1000, height=1000)):
     return square_image
 
 
-def overlay(original_img, overlay_img, position=ImagePos(x=0, y=0)):
+def overlay(original_img, overlay_img, position=ImagePos(x=0, y=0), mask=None):
+    """
+    mask = None -> use overlay_img itself (for PNG only)
+    mask = False -> no mask
+    mask = PIL.Image -> use that image
+    """
     assert isinstance(original_img, Image.Image)
 
     res_image = original_img.copy()
-    res_image.paste(overlay_img, position)
+
+    if mask is None:
+        res_image.paste(overlay_img, position, overlay_img)
+    elif not mask:
+        res_image.paste(overlay_img, position)
+    else:
+        res_image.paste(overlay_img, position, overlay_img)
 
     return res_image
 
