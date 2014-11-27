@@ -75,6 +75,14 @@ DATABASES = {
          'ENGINE': 'django.db.backends.sqlite3',
          'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
+    # 'default': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': 'thumblr_test',
+    #         'USER': 'thumblr_test',
+    #         'PASSWORD': '1',
+    #         'HOST': 'localhost',
+    #         'PORT': '',
+    # },
 }
 
 # Internationalization
@@ -109,7 +117,6 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
-
     #'thumblr': {
     #    'BACKEND': 'redis_cache.cache.RedisCache',
     #    'LOCATION': '{ip}:{port}:0'.format(ip=REDIS_SERVER, port=REDIS_PORT),
@@ -118,3 +125,4 @@ CACHES = {
     #    },
     #}
 }
+
