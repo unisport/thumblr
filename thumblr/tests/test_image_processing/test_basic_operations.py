@@ -1,10 +1,11 @@
 import StringIO
+
 from PIL import Image
 from django.test import TestCase
 import os
+from thumblr.image_processing import basic_operations
 from thumblr.tests.base import TuplesCompareMixin
-from thumblr.utils import pil_processing
-from thumblr.utils.pil_processing import ImageDim, ImagePos
+from thumblr.image_processing.basic_operations import ImageDim, ImagePos
 
 
 class TestSquarify(TestCase, TuplesCompareMixin):
@@ -22,7 +23,7 @@ class TestSquarify(TestCase, TuplesCompareMixin):
         self.boots_pil_image = Image.open(self.image_data)
 
     def test_basic(self):
-        squared_image = pil_processing.squarify(
+        squared_image = basic_operations.squarify(
             self.boots_pil_image,
             result_size=ImageDim(width=1000, height=1000)
         )
@@ -73,14 +74,14 @@ class TestOverlay(TestCase, TuplesCompareMixin):
             os.path.dirname(__file__), "..", "data", "squared_img.jpg"
         ))
 
-        self.squared_thumbnail = pil_processing.squarify(
+        self.squared_thumbnail = basic_operations.squarify(
             squared_etalon,
             ImageDim(width=100, height=100)
         )
 
     def test_basic(self):
 
-        result_image = pil_processing.overlay(
+        result_image = basic_operations.overlay(
             self.boots_pil_image, self.squared_thumbnail,
             ImagePos(x=50, y=50),
         )
@@ -136,7 +137,7 @@ class TestThumbnail(TestCase, TuplesCompareMixin):
         ))
 
     def test_basic(self):
-        thumbnail = pil_processing.thumbnail(
+        thumbnail = basic_operations.thumbnail(
             self.boots_pil_image,
             ImageDim(width=100, height=100)
         )
