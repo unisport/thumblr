@@ -1,4 +1,5 @@
 from django import forms
+from thumblr.models import ImageSize
 
 
 class AddImageForm(forms.Form):
@@ -8,3 +9,6 @@ class AddImageForm(forms.Form):
     object_id = forms.IntegerField()
 
 
+class ImageSizeForm(forms.ModelForm):
+    class Meta:
+        model = ImageSize

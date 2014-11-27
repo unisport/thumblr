@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'south',
     'thumblr',
+    'django_tables2',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -60,6 +61,7 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.request',
 )
 
 ROOT_URLCONF = 'example.urls'

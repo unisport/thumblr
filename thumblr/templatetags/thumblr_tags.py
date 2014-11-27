@@ -1,9 +1,12 @@
 from django import template
 from django.template.base import TemplateSyntaxError
+
 from thumblr.dto import ImageMetadata, ImageUrlSpec
-from thumblr.models import ImageFile
+from thumblr.forms import ImageSizeForm
+from thumblr.models import ImageFile, ImageSize
 from thumblr.services.image_file_service import get_image_file_url
 from thumblr.usecases import get_image_url
+from thumblr.views import SizeTable
 from .utils import parse_kwargs
 
 
@@ -19,6 +22,9 @@ def thumblr_tag_parser(parser, token):
 
     kwargs = parse_kwargs(params)
     return ThumblrNode(file_name[1:-1], **kwargs)
+
+
+register.tag("thumblr", thumblr_tag_parser)
 
 
 class ThumblrNode(template.Node):
@@ -68,6 +74,7 @@ class ImagesNode(template.Node):
         context[self.var_name] = urls
 
 
+@register.tag("thumblr_imgs")
 def thumblr_imgs(parser, token):
     '''
     Could be used with or without
@@ -87,5 +94,36 @@ def thumblr_imgs(parser, token):
         return ImagesNode(var_name, **kwargs)
 
 
-register.tag("thumblr", thumblr_tag_parser)
-register.tag("thumblr_imgs", thumblr_imgs)
+
+
+class SizeAddingNode(template.Node):
+    def __init__(self, content_type_id):
+        self.content_type_id = content_type_id
+
+    def render(self, context):
+        context['form'] = ImageSizeForm()
+        context['sizes'] = ImageSize.objects.all()
+        t = template.loader.get_template('thumblr/sizes.html')
+        context['sizes'] = SizeTable(ImageSize.objects.all())
+        return t.render(context)
+
+@register.tag("thumblr_add_sizes")
+def thumblr_size_adding(parser, token):
+    """
+    Tag that returns a form for adding new size with a list of existing sizes for given content type
+    {% thumblr_add_sizes content_type_id=2 %}
+    """
+    try:
+        split_content = token.split_contents()
+        tag_name, content_type_id_unparsed = split_content[0], split_content[-1]
+        key, content_type_id = content_type_id_unparsed.split('=')
+        if key != 'content_type_id':
+            raise TemplateSyntaxError(
+                "content_type_id coudn't be found in template tag. Check the syntax (Example: thumblr_add_sizes content_type_id=1)")
+    except IndexError:
+        raise TemplateSyntaxError("Only two arguments should be passes (Example: thumblr_add_sizes content_type_id=1)")
+
+    return SizeAddingNode(content_type_id)
+
+
+
