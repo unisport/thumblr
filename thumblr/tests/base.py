@@ -34,7 +34,7 @@ class BaseThumblrTestCase(TestCase):
         )
 
         with open(self.image_file_path) as f:
-            self.image, self.image_file = usecases.add_image(
+            self.image_metadata = usecases.add_image(
                 File(f),
                 self.image_metadata
             )

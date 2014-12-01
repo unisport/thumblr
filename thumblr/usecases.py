@@ -9,7 +9,7 @@ from thumblr.caching import cached, drop_cache_for
 from thumblr.dto import ImageMetadata, ImageUrlSpec
 from thumblr.models import ImageFile
 from thumblr.services.image_file_service import create_image_file, get_image_file_by_spec, get_image_file_url, \
-    replace_uploaded_image, get_image_file_by_id
+    replace_uploaded_image, get_image_file_by_id, get_image_file_metadata
 from thumblr.services.image_service import create_image
 
 
@@ -23,7 +23,7 @@ def add_image(uploaded_file, image_metadata):
     image = create_image(image_metadata)
     image_file = create_image_file(uploaded_file, image_metadata, image)
 
-    return image, image_file
+    return get_image_file_metadata(image_file)
 
 
 @cached
@@ -49,7 +49,7 @@ def update_image(new_file, image_metadata):
     image_file = get_image_file_by_spec(image_metadata)
     replace_uploaded_image(image_file, new_file)
 
-    return image_file
+    return get_image_file_metadata(image_file)
 
 
 @receiver(pre_save, sender=ImageFile)

@@ -94,8 +94,6 @@ def thumblr_imgs(parser, token):
         return ImagesNode(var_name, **kwargs)
 
 
-
-
 class SizeAddingNode(template.Node):
     def __init__(self, content_type_id):
         self.content_type_id = content_type_id
@@ -106,6 +104,7 @@ class SizeAddingNode(template.Node):
         t = template.loader.get_template('thumblr/sizes.html')
         context['sizes'] = SizeTable(ImageSize.objects.all())
         return t.render(context)
+
 
 @register.tag("thumblr_add_sizes")
 def thumblr_size_adding(parser, token):
