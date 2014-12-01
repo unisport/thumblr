@@ -85,7 +85,6 @@ class TestDropCacheImageUrls(BaseThumblrTestCase):
         self.new_image_file_path = os.path.join(
             os.path.dirname(__file__), "data", "costume.jpg"
         )
-        self.image_metadata.image_file_id = self.image_file.id
 
     def test_basic(self):
         locmem_cache = get_cache('django.core.cache.backends.locmem.LocMemCache')

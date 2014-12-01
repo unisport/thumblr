@@ -2,6 +2,11 @@ __all__ = ['ImageMetadata', 'ImageUrlSpec']
 
 
 class ImageMetadata(object):
+    """
+    This should be used everywhere, it abstracts data model. In perfect world, orm models like
+    Image and ImageFile should never go out of thumblr application and appear anywhere else.
+    """
+
     def __init__(self,
                  image_file_id=None,
                  image_hash=None,

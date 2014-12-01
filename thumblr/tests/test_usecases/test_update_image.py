@@ -1,6 +1,7 @@
 from django.core.files import File
 import os
 from thumblr import usecases
+from thumblr import dto
 from thumblr.models import ImageFile
 from thumblr.tests.base import BaseThumblrTestCase
 
@@ -14,24 +15,27 @@ class TestUpdateImageUsecase(BaseThumblrTestCase):
         )
 
     def test_basic_usage(self):
+        old_s3_url = usecases.get_image_url(self.image_metadata, dto.ImageUrlSpec.S3_URL)
+        old_cdn_url = usecases.get_image_url(self.image_metadata, dto.ImageUrlSpec.CDN_URL)
+
         with open(self.new_image) as f:
-            image_file = usecases.update_image(
+            new_image_metadata = usecases.update_image(
                 File(f), self.image_metadata
             )
 
-        assert isinstance(image_file, ImageFile)
+        assert isinstance(new_image_metadata, dto.ImageMetadata)
 
         self.assertNotEqual(
-            image_file.image_hash,
-            self.image_file.image_hash
+            new_image_metadata.image_hash,
+            self.image_metadata.image_hash,
         )
 
         self.assertNotEqual(
-            image_file.image_in_storage.url,
-            self.image_file.image_in_storage.url,
+            usecases.get_image_url(new_image_metadata, dto.ImageUrlSpec.S3_URL),
+            old_s3_url,
         )
 
         self.assertNotEqual(
-            image_file.image_hash_in_storage.url,
-            self.image_file.image_hash_in_storage.url,
+            usecases.get_image_url(new_image_metadata, dto.ImageUrlSpec.CDN_URL),
+            old_cdn_url,
         )

@@ -2,6 +2,7 @@ import boto
 from django.conf import settings
 from thumblr.models import upload_to
 from thumblr.tests.base import BaseThumblrTestCase
+from thumblr.services.image_file_service import get_image_file_by_id
 
 
 class TestAddImageUsecase(BaseThumblrTestCase):
@@ -17,12 +18,18 @@ class TestAddImageUsecase(BaseThumblrTestCase):
 
     def test_basic_addition(self):
         original_file = self.bucket_conn.get_key(
-            key_name=upload_to(self.image_file, "boots.jpg")
+            key_name=upload_to(
+                get_image_file_by_id(self.image_metadata.image_file_id),
+                "boots.jpg"
+            )
         )
         self.assertIsNotNone(original_file, "Original file does't exist on S3")
 
         hash_file = self.bucket_conn.get_key(
-            key_name=upload_to(self.image_file, "boots.jpg")
+            key_name=upload_to(
+                get_image_file_by_id(self.image_metadata.image_file_id),
+                "boots.jpg"
+            )
         )
         self.assertIsNotNone(hash_file, "Hash file does't exist on S3")
 

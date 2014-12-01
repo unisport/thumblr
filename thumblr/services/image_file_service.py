@@ -1,4 +1,3 @@
-from thumblr.caching import cached
 from thumblr.dto import ImageMetadata, ImageUrlSpec
 from thumblr.exceptions import NoSuchImageException, IncorrectUrlSpecException
 from thumblr.models import ImageFile, Image, ImageSize
@@ -76,3 +75,18 @@ def get_image_file_url(image_file, url_spec):
         return image_file.image_hash_in_storage.name
     else:
         raise IncorrectUrlSpecException()
+
+
+def get_image_file_metadata(image_file):
+    assert isinstance(image_file, ImageFile)
+
+    return ImageMetadata(
+        image_file_id=image_file.id,
+        image_hash=image_file.image_hash,
+
+        file_name=image_file.image.original_file_name,
+        site_id=image_file.image.site_id,
+        size_slug=image_file.size.name,
+        content_type_id=image_file.image.content_type_id,
+        object_id=image_file.image.object_id,
+    )

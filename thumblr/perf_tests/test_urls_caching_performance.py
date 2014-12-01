@@ -33,7 +33,7 @@ class TestCachingImageUrls(BaseThumblrTestCase):
         for i in xrange(TestCachingImageUrls.TMP_FILES):
             rnd_str = self._random_string()
             f = StringIO.StringIO(rnd_str)
-            _, image_file = usecases.add_image(
+            image_metadata = usecases.add_image(
                 File(f, rnd_str),
                 ImageMetadata(
                     file_name=rnd_str,
@@ -44,7 +44,7 @@ class TestCachingImageUrls(BaseThumblrTestCase):
                 )
             )
 
-            self.tmp_images.append(image_file)
+            self.tmp_images.append(image_metadata)
 
     def test_not_cached(self):
         dummy_cache = get_cache(
@@ -58,9 +58,9 @@ class TestCachingImageUrls(BaseThumblrTestCase):
                  timer('Image CDN url generation. Caching DISABLED x{iters} iters.'.format(iters=self.ITERATIONS)):
 
                 for i in xrange(self.ITERATIONS):
-                    image_file = self.tmp_images[random.randint(0, self.TMP_FILES - 1)]
+                    image_metadata = self.tmp_images[random.randint(0, self.TMP_FILES - 1)]
                     usecases.get_image_url(
-                        ImageMetadata(image_file_id=image_file.id),
+                        image_metadata,
                         ImageUrlSpec.CDN_URL
                     )
 
@@ -69,8 +69,8 @@ class TestCachingImageUrls(BaseThumblrTestCase):
              profile(),\
              timer('Image CDN url generation. Caching ENABLED x{iters} iters.'.format(iters=self.ITERATIONS)):
             for i in xrange(self.ITERATIONS):
-                image_file = self.tmp_images[random.randint(0, self.TMP_FILES - 1)]
+                image_metadata = self.tmp_images[random.randint(0, self.TMP_FILES - 1)]
                 usecases.get_image_url(
-                    ImageMetadata(image_file_id=image_file.id),
+                    image_metadata,
                     ImageUrlSpec.CDN_URL
                 )
