@@ -13,7 +13,7 @@ from thumblr.services.image_file_service import create_image_file, get_image_fil
 from thumblr.services.image_service import create_image
 
 
-__all__ = ['add_image', 'get_image_file_url', 'update_image']
+__all__ = ['add_image', 'get_image_url', 'update_image']
 
 
 @atomic
