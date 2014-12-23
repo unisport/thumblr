@@ -17,14 +17,19 @@ def create_image(image_metadata):
     return image
 
 
-def get_image_by_spec(image_spec):
+def get_images_by_spec(image_spec, one=False):
     assert isinstance(image_spec, ImageMetadata)
 
-    image = Image.objects.filter(
+    images = Image.objects.filter(
         Image.get_q(image_spec)
-    ).first()
+    )
 
-    if image is None:
-        raise NoSuchImageException()
+    if one:
+        image = images.first()
 
-    return image
+        if image is None:
+            raise NoSuchImageException()
+
+        return image
+
+    return images

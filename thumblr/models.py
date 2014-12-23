@@ -62,6 +62,7 @@ class Image(models.Model):
 class ImageSize(models.Model):
 
     ORIGINAL = 'original'
+    SQUARED = 'squared'
 
     name = models.CharField(max_length=30, primary_key=True)
     width = models.IntegerField(null=True, blank=True)
