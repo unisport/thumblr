@@ -1,18 +1,9 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url, include
 from django.contrib import admin
-from thumblr import views
 
+from thumblr import urls as thumblr_urls
 
-admin.autodiscover()
-
-
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'example.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-
+urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^sizes/$', views.imagesizes, name='imagesizes'),
-
-
-)
+    url(r'^thumblr/', include(thumblr_urls)),
+    )
