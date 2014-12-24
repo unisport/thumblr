@@ -15,7 +15,8 @@ class ImageMetadata(object):
                  site_id=None,
                  size_slug=None,
                  content_type_id=None,
-                 object_id=None):
+                 object_id=None,
+                 is_main=None):
         self.image_file_id = image_file_id
         self.image_hash = image_hash
 
@@ -24,6 +25,7 @@ class ImageMetadata(object):
         self.content_type_id = content_type_id
         self.object_id = object_id
         self.size_slug = size_slug
+        self.is_main = is_main
 
     def __str__(self):
         return "{image_file_id}::{file_name}::{size}".format(

@@ -1,9 +1,12 @@
 include README.md
 
+recursive-include thumblr/image_processing *
 recursive-include thumblr/migrations *
 recursive-include thumblr/services *
-recursive-include thumblr/templetags *
+recursive-include thumblr/templatetags *
+recursive-include thumblr/templates *
 recursive-include thumblr/utils *
 recursive-include thumblr/tests *
+recursive-include thumblr/perf_tests *
 
 global-exclude *.pyc

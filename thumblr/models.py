@@ -62,6 +62,7 @@ class Image(models.Model):
 class ImageSize(models.Model):
 
     ORIGINAL = 'original'
+    SQUARED = 'squared'
 
     name = models.CharField(max_length=30, primary_key=True)
     width = models.IntegerField(null=True, blank=True)
@@ -70,8 +71,6 @@ class ImageSize(models.Model):
     
     def __unicode__(self):
         return '%s' % self.name
-
-
 
 
 def upload_to(inst, filename):
@@ -93,6 +92,7 @@ class ImageFile(models.Model):
     image_hash = models.CharField(max_length=256)
     size = models.ForeignKey(ImageSize)
     meta_data = JSONField(null=True, blank=True)
+    is_main = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u"%s::%s::%s::%s".format(
@@ -113,6 +113,9 @@ class ImageFile(models.Model):
 
         if not image_spec.image_hash is None:
             q &= Q(image_hash=image_spec.image_hash)
+
+        if not image_spec.is_main is None:
+            q &= Q(is_main=image_spec.is_main)
 
         if not image_spec.size_slug is None:
             q &= Q(size__name=image_spec.size_slug)

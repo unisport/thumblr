@@ -1,7 +1,7 @@
 from thumblr.dto import ImageMetadata, ImageUrlSpec
 from thumblr.exceptions import NoSuchImageException, IncorrectUrlSpecException
 from thumblr.models import ImageFile, Image, ImageSize
-from thumblr.services.image_service import get_image_by_spec
+from thumblr.services.image_service import get_images_by_spec
 from thumblr.utils.cdn import get_cdn_domain
 
 
@@ -12,6 +12,7 @@ def create_image_file(uploaded_file, image_metadata, image_inst):
     image_file = ImageFile()
     image_file.image = image_inst
     image_file.image_in_storage = uploaded_file
+    image_file.is_main = image_metadata.is_main or False
 
     original_size = ImageSize.objects.get(name=image_metadata.size_slug)
     image_file.size = original_size
@@ -40,7 +41,7 @@ def get_image_file_by_hash(image_hash):
         raise NoSuchImageException()
 
 
-def get_image_file_by_spec(image_spec):
+def get_image_files_by_spec(image_spec, one=False):
     assert isinstance(image_spec, ImageMetadata)
 
     if not image_spec.image_file_id is None:
@@ -49,16 +50,22 @@ def get_image_file_by_spec(image_spec):
     if not image_spec.image_hash is None:
         return get_image_file_by_hash(image_spec.image_hash)
 
-    image = get_image_by_spec(image_spec)
+    res = []
 
-    image_file = image.imagefile_set.filter(
-        ImageFile.get_q(image_spec)
-    ).first()
+    for image in get_images_by_spec(image_spec):
+        res.extend(
+            image.imagefile_set.filter(
+                ImageFile.get_q(image_spec)
+            )
+        )
 
-    if image_file is None:
+    if not res and one:
         raise NoSuchImageException()
 
-    return image_file
+    if one:
+        return res[0]
+    else:
+        return res
 
 
 def get_image_file_url(image_file, url_spec):
@@ -89,4 +96,6 @@ def get_image_file_metadata(image_file):
         size_slug=image_file.size.name,
         content_type_id=image_file.image.content_type_id,
         object_id=image_file.image.object_id,
+
+        is_main=image_file.is_main,
     )
