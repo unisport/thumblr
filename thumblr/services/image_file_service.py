@@ -96,4 +96,6 @@ def get_image_file_metadata(image_file):
         size_slug=image_file.size.name,
         content_type_id=image_file.image.content_type_id,
         object_id=image_file.image.object_id,
+
+        is_main=image_file.is_main,
     )
