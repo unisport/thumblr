@@ -19,6 +19,7 @@ class TestUpdateImageUsecase(BaseThumblrTestCase):
             size_slug=ImageSize.SQUARED,
             content_type_id=1,
             object_id=1,
+            is_main=True,
         )
 
         self.new_image = os.path.join(
@@ -73,3 +74,20 @@ class TestUpdateImageUsecase(BaseThumblrTestCase):
         )
 
         self.assertEqual(len(images_data), 2)
+
+    def test_filter_is_main(self):
+        images_data = usecases.get_all_images(
+            ImageMetadata(
+                is_main=True,
+            )
+        )
+
+        self.assertEqual(len(images_data), 1)
+
+        images_data = usecases.get_all_images(
+            ImageMetadata(
+                is_main=False,
+            )
+        )
+
+        self.assertEqual(len(images_data), 1)

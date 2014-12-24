@@ -44,7 +44,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'django.contrib.sites',
-    #'south',
+    'south',
     'thumblr',
     'django_tables2',
 )

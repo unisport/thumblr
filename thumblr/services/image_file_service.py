@@ -12,6 +12,7 @@ def create_image_file(uploaded_file, image_metadata, image_inst):
     image_file = ImageFile()
     image_file.image = image_inst
     image_file.image_in_storage = uploaded_file
+    image_file.is_main = image_metadata.is_main or False
 
     original_size = ImageSize.objects.get(name=image_metadata.size_slug)
     image_file.size = original_size
