@@ -31,6 +31,6 @@ class TestSizeAddNode(TestCase):
         self.context['request'] = HttpRequest()
         result = _template.render(Context(self.context))
         self.assertIn('<input type="submit" value="Submit"/>', result, 'Submit button not in a form')
-        self.assertIn('<form action="{}" method="post">'.format(reverse('imagesizes')), result)
+        self.assertIn('<form action="{}" method="post">'.format(reverse('thumblr:imagesizes')), result)
         self.assertIn('<label for="id_width">', result, "Width wasn't found in a form")
         self.assertIn('<label for="id_height">', result, "Height wasn't found in a form")

@@ -13,7 +13,7 @@
         {% endfor %}
     </ul>
 {% endif %}
-<form action="{% url 'imagesizes' %}" method="post">{% csrf_token %}
+<form action="{% url 'thumblr:imagesizes' %}" method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit"/>
 </form>
