@@ -94,8 +94,6 @@ def thumblr_imgs(parser, token):
         return ImagesNode(var_name, **kwargs)
 
 
-
-
 class SizeAddingNode(template.Node):
     def __init__(self, content_type_id):
         self.content_type_id = content_type_id
@@ -107,6 +105,7 @@ class SizeAddingNode(template.Node):
         context['sizes'] = SizeTable(ImageSize.objects.all())
         return t.render(context)
 
+
 @register.tag("thumblr_add_sizes")
 def thumblr_size_adding(parser, token):
     """
@@ -115,11 +114,15 @@ def thumblr_size_adding(parser, token):
     """
     try:
         split_content = token.split_contents()
+        if len(split_content) <= 1:
+            raise TemplateSyntaxError("content_type_id wasn't found in templeate tag. Check the syntax (Example: "
+                                      "thumblr_add_sizes content_type_id=1)")
         tag_name, content_type_id_unparsed = split_content[0], split_content[-1]
         key, content_type_id = content_type_id_unparsed.split('=')
         if key != 'content_type_id':
             raise TemplateSyntaxError(
-                "content_type_id coudn't be found in template tag. Check the syntax (Example: thumblr_add_sizes content_type_id=1)")
+                "content_type_id coudn't be found in template tag. Check the syntax (Example: "
+                "thumblr_add_sizes content_type_id=1)")
     except IndexError:
         raise TemplateSyntaxError("Only two arguments should be passes (Example: thumblr_add_sizes content_type_id=1)")
 
