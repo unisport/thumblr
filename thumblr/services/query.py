@@ -1,5 +1,4 @@
-from django.db.models import Q
-from thumblr import ImageMetadata
+from thumblr.dto import ImageMetadata
 from thumblr.exceptions import NoSuchImageException
 from thumblr.models import Image
 

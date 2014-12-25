@@ -1,4 +1,4 @@
-from thumblr import ImageMetadata
+from thumblr.dto import ImageMetadata
 from thumblr.models import Image, ImageSize
 
 

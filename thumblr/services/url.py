@@ -1,4 +1,4 @@
-from thumblr import ImageUrlSpec
+from thumblr.dto import ImageUrlSpec
 from thumblr.exceptions import IncorrectUrlSpecException
 from thumblr.models import Image
 from thumblr.utils.cdn import get_cdn_domain
