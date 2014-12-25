@@ -10,7 +10,7 @@ from thumblr.services.query import get_image_metadata, get_images_by_spec
 from thumblr.services.url import get_image_instance_url
 
 
-__all__ = ['add_image', 'get_image_url', 'update_image']
+__all__ = ['add_image', 'get_image_url', 'update_image', 'update_images_metadata', 'delete_images', 'get_all_images']
 
 
 @atomic
@@ -42,7 +42,7 @@ def update_image(new_file, image_metadata):
     """
     assert isinstance(image_metadata, ImageMetadata)
 
-    image_file = get_images_by_spec(image_metadata)
+    image_file = get_images_by_spec(image_metadata, one=True)
     replace_uploaded_image(image_file, new_file)
 
     return get_image_metadata(image_file)

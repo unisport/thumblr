@@ -7,10 +7,12 @@ def get_images_by_spec(image_spec, one=False):
     assert isinstance(image_spec, ImageMetadata)
 
     if not image_spec.image_file_id is None:
-        return get_image_by_id(image_spec.image_file_id)
+        r = get_image_by_id(image_spec.image_file_id)
+        return r if one else [r]
 
     if not image_spec.image_hash is None:
-        return get_image_by_hash(image_spec.image_hash)
+        r = get_image_by_hash(image_spec.image_hash)
+        return r if one else [r]
 
     q = Image.get_q(image_spec)
 
