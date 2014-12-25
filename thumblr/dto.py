@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 __all__ = ['ImageMetadata', 'ImageUrlSpec']
 
 
@@ -16,7 +18,8 @@ class ImageMetadata(object):
                  size_slug=None,
                  content_type_id=None,
                  object_id=None,
-                 is_main=None):
+                 is_main=None,
+                 ):
         self.image_file_id = image_file_id
         self.image_hash = image_hash
 
@@ -27,12 +30,36 @@ class ImageMetadata(object):
         self.size_slug = size_slug
         self.is_main = is_main
 
+        # for filtering
+        self.inverse = False
+
     def __str__(self):
         return "{image_file_id}::{file_name}::{size}".format(
             image_file_id=self.image_file_id,
             file_name=self.original_file_name,
             size=self.size_slug,
         )
+
+    def invert(self):
+        return self.extend(inverse=not self.inverse)
+
+    def extend(self, **kwargs):
+        cpy = deepcopy(self)
+        for k, v in kwargs.items():
+            if hasattr(cpy, k):
+                setattr(cpy, k, v)
+        return cpy
+
+    def is_empty(self):
+        return \
+            self.image_file_id is None and \
+            self.original_file_name is None and \
+            self.site_id is None and \
+            self.content_type_id is None and \
+            self.object_id is None and \
+            self.image_hash is None and \
+            self.is_main is None and \
+            self.size_slug is None
 
 
 class ImageUrlSpec(object):

@@ -1,3 +1,4 @@
+from django.db.models import Q
 from thumblr import ImageMetadata
 from thumblr.exceptions import NoSuchImageException
 from thumblr.models import Image
@@ -12,9 +13,15 @@ def get_images_by_spec(image_spec, one=False):
     if not image_spec.image_hash is None:
         return get_image_by_hash(image_spec.image_hash)
 
-    images = Image.objects.filter(
-        Image.get_q(image_spec)
-    )
+    q = Image.get_q(image_spec)
+
+    if not image_spec.inverse:
+        images = Image.objects.filter(q)
+    else:
+        if image_spec.is_empty():  # exclude for empty q works not as expected
+            images = []
+        else:
+            images = Image.objects.exclude(q)
 
     if one:
         image = images.first()
