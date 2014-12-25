@@ -1,8 +1,8 @@
 import boto
 from django.conf import settings
 from thumblr.models import upload_to
+from thumblr.services.query import get_image_by_id
 from thumblr.tests.base import BaseThumblrTestCase
-from thumblr.services.image_file_service import get_image_file_by_id
 
 
 class TestAddImageUsecase(BaseThumblrTestCase):
@@ -19,7 +19,7 @@ class TestAddImageUsecase(BaseThumblrTestCase):
     def test_basic_addition(self):
         original_file = self.bucket_conn.get_key(
             key_name=upload_to(
-                get_image_file_by_id(self.image_metadata.image_file_id),
+                get_image_by_id(self.image_metadata.image_file_id),
                 "boots.jpg"
             )
         )
@@ -27,7 +27,7 @@ class TestAddImageUsecase(BaseThumblrTestCase):
 
         hash_file = self.bucket_conn.get_key(
             key_name=upload_to(
-                get_image_file_by_id(self.image_metadata.image_file_id),
+                get_image_by_id(self.image_metadata.image_file_id),
                 "boots.jpg"
             )
         )

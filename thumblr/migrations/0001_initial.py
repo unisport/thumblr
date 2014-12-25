@@ -8,46 +8,49 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Image'
-        db.create_table(u'thumblr_image', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('site', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['sites.Site'])),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True, blank=True)),
-            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-            ('original_file_name', self.gf('django.db.models.fields.CharField')(max_length=256)),
-        ))
-        db.send_create_signal(u'thumblr', ['Image'])
-
         # Adding model 'ImageSize'
         db.create_table(u'thumblr_imagesize', (
             ('name', self.gf('django.db.models.fields.CharField')(max_length=30, primary_key=True)),
-            ('max_width', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('max_height', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('width', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('height', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
         ))
         db.send_create_signal(u'thumblr', ['ImageSize'])
 
-        # Adding model 'ImageFile'
-        db.create_table(u'thumblr_imagefile', (
+        # Adding M2M table for field content_types on 'ImageSize'
+        m2m_table_name = db.shorten_name(u'thumblr_imagesize_content_types')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('imagesize', models.ForeignKey(orm[u'thumblr.imagesize'], null=False)),
+            ('contenttype', models.ForeignKey(orm[u'contenttypes.contenttype'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['imagesize_id', 'contenttype_id'])
+
+        # Adding model 'Image'
+        db.create_table(u'thumblr_image', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('image', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['thumblr.Image'])),
+            ('site', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['sites.Site'], null=True)),
+            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True, blank=True)),
+            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
+            ('original_file_name', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('image_in_storage', self.gf('django.db.models.fields.files.ImageField')(max_length=100)),
             ('image_hash_in_storage', self.gf('django.db.models.fields.files.ImageField')(max_length=100)),
             ('image_hash', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('size', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['thumblr.ImageSize'])),
             ('meta_data', self.gf('jsonfield.fields.JSONField')(null=True, blank=True)),
+            ('is_main', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
-        db.send_create_signal(u'thumblr', ['ImageFile'])
+        db.send_create_signal(u'thumblr', ['Image'])
 
 
     def backwards(self, orm):
-        # Deleting model 'Image'
-        db.delete_table(u'thumblr_image')
-
         # Deleting model 'ImageSize'
         db.delete_table(u'thumblr_imagesize')
 
-        # Deleting model 'ImageFile'
-        db.delete_table(u'thumblr_imagefile')
+        # Removing M2M table for field content_types on 'ImageSize'
+        db.delete_table(db.shorten_name(u'thumblr_imagesize_content_types'))
+
+        # Deleting model 'Image'
+        db.delete_table(u'thumblr_image')
 
 
     models = {
@@ -68,25 +71,22 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Image'},
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']", 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'original_file_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'site': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['sites.Site']"})
-        },
-        u'thumblr.imagefile': {
-            'Meta': {'object_name': 'ImageFile'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'image': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['thumblr.Image']"}),
             'image_hash': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'image_hash_in_storage': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
             'image_in_storage': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
+            'is_main': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'meta_data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'original_file_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'site': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sites.Site']", 'null': 'True'}),
             'size': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['thumblr.ImageSize']"})
         },
         u'thumblr.imagesize': {
             'Meta': {'object_name': 'ImageSize'},
-            'max_height': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'max_width': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'primary_key': 'True'})
+            'content_types': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'image_sizes'", 'symmetrical': 'False', 'to': u"orm['contenttypes.ContentType']"}),
+            'height': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'primary_key': 'True'}),
+            'width': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         }
     }
 

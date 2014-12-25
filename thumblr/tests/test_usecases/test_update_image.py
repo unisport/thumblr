@@ -2,7 +2,6 @@ from django.core.files import File
 import os
 from thumblr import usecases
 from thumblr import dto
-from thumblr.models import ImageFile
 from thumblr.tests.base import BaseThumblrTestCase
 
 
