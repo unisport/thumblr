@@ -22,20 +22,59 @@ s3 = S3Storage(
 )
 
 
+class ImageSize(models.Model):
+
+    ORIGINAL = 'original'
+    SQUARED = 'squared'
+
+    name = models.CharField(max_length=30, primary_key=True)
+    width = models.IntegerField(null=True, blank=True)
+    height = models.IntegerField(null=True, blank=True)
+    content_types = models.ManyToManyField(ContentType, related_name="image_sizes")
+
+    def __unicode__(self):
+        return '%s' % self.name
+
+
+def upload_to(inst, filename):
+    assert isinstance(inst, Image)
+
+    # object id used to enalbe uploading of file of same names
+    return u'{content_type}/{object_id}/{filename}'.format(
+        content_type=inst.content_type.name.replace(u" ", u"_"),
+        object_id=inst.object_id,
+        filename=ntpath.basename(filename)
+    )
+
+
 class Image(models.Model):
 
     # site is optional here. Pictures should be available across all sites.
     # I left it here in case the product is dedicated to one specific country's site
     site = models.ForeignKey(Site, null=True)
+
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.PositiveIntegerField(null=True, blank=True)
     content_object = GenericForeignKey('content_type', 'object_id')
+
     original_file_name = models.CharField(max_length=256)
 
+    image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
+    image_hash_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
+    image_hash = models.CharField(max_length=256)
+    size = models.ForeignKey(ImageSize)
+    meta_data = JSONField(null=True, blank=True)
+    is_main = models.BooleanField(default=False)
+
     def __unicode__(self):
-        return u"%s::%s::%s" % (self.id,
-                                self.original_file_name,
-                                self.site.name,
+        return u"%s::%s::%s::%s::%s::%s::%s" % (
+            self.id,
+            self.original_file_name,
+            self.site.name,
+            self.original_file_name,
+            self.image_hash,
+            self.id,
+            self.size.name,
         )
 
     @classmethod
@@ -43,6 +82,9 @@ class Image(models.Model):
         assert isinstance(image_spec, ImageMetadata)
 
         q = Q()
+
+        if not image_spec.image_file_id is None:
+            q &= Q(pk=image_spec.image_file_id)
 
         if not image_spec.original_file_name is None:
             q &= Q(original_file_name=image_spec.original_file_name)
@@ -56,61 +98,6 @@ class Image(models.Model):
         if not image_spec.object_id is None:
             q &= Q(object_id=image_spec.object_id)
 
-        return q
-
-
-class ImageSize(models.Model):
-
-    ORIGINAL = 'original'
-    SQUARED = 'squared'
-
-    name = models.CharField(max_length=30, primary_key=True)
-    width = models.IntegerField(null=True, blank=True)
-    height = models.IntegerField(null=True, blank=True)
-    content_types = models.ManyToManyField(ContentType, related_name="image_sizes")
-    
-    def __unicode__(self):
-        return '%s' % self.name
-
-
-def upload_to(inst, filename):
-    assert isinstance(inst, ImageFile)
-
-    # object id used to enalbe uploading of file of same names
-    return u'{content_type}/{object_id}/{filename}'.format(
-        content_type=inst.image.content_type.name.replace(u" ", u"_"),
-        object_id=inst.image.object_id,
-        filename=ntpath.basename(filename)
-    )
-
-
-class ImageFile(models.Model):
-
-    image = models.ForeignKey(Image)
-    image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
-    image_hash_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
-    image_hash = models.CharField(max_length=256)
-    size = models.ForeignKey(ImageSize)
-    meta_data = JSONField(null=True, blank=True)
-    is_main = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return u"%s::%s::%s::%s".format(
-            self.image.original_file_name,
-            self.image_hash,
-            self.id,
-            self.size.name
-        )
-
-    @classmethod
-    def get_q(cls, image_spec):
-        assert isinstance(image_spec, ImageMetadata)
-
-        q = Q()
-
-        if not image_spec.image_file_id is None:
-            q &= Q(pk=image_spec.image_file_id)
-
         if not image_spec.image_hash is None:
             q &= Q(image_hash=image_spec.image_hash)
 
@@ -123,9 +110,9 @@ class ImageFile(models.Model):
         return q
 
 
-@receiver(pre_save, sender=ImageFile)
+@receiver(pre_save, sender=Image)
 def fill_hashed_image_fields(sender, instance, *args, **kwargs):
-    assert isinstance(instance, ImageFile)
+    assert isinstance(instance, Image)
 
     uploaded_image = instance.image_in_storage
 
