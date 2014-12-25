@@ -29,6 +29,7 @@ DEBUG = True
 sys.path.append(realpath(join(dirname(__file__), '../..')))
 
 TEMPLATE_DEBUG = True
+TEMPLATE_DIRS = (os.path.join(dirname(__file__), 'templates'))
 
 ALLOWED_HOSTS = []
 
@@ -59,9 +60,9 @@ MIDDLEWARE_CLASSES = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
     'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request',
 )
 
 ROOT_URLCONF = 'example.urls'
