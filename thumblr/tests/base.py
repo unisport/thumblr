@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.core.files import File
 from django.test import TestCase
 from moto import mock_s3
@@ -19,17 +20,17 @@ class BaseThumblrTestCase(TestCase):
             os.path.dirname(__file__), "data", "boots.jpg"
         )
         self.site_id = 1
-        self.content_type_id = 1
+        self.content_type_id = ContentType.objects.values('id').get(name='image')['id']
         self.object_id = 1
 
-        original_size = ImageSize(name=ImageSize.ORIGINAL)
+        original_size = ImageSize(name=ImageSize.ORIGINAL, content_type_id=self.content_type_id)
         original_size.save()
 
         self.image_metadata = ImageMetadata(
             file_name='boots.jpg',
             site_id=1,
             size_slug=ImageSize.ORIGINAL,
-            content_type_id=1,
+            content_type_id=self.content_type_id,
             object_id=1,
         )
 

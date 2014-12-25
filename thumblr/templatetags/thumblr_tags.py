@@ -30,10 +30,11 @@ register.tag("thumblr", thumblr_tag_parser)
 
 
 class ThumblrNode(template.Node):
-    def __init__(self, file_name, size=None, site_id=None, main=True):
+    def __init__(self, file_name, size=None, site_id=None, content_type_name=None, main=True):
         self.file_name = file_name
         self.size = size
         self.site_id = site_id
+        self.content_type_name = content_type_name
         self.main = main
 
         self._url = None
@@ -45,6 +46,7 @@ class ThumblrNode(template.Node):
                 file_name=self.file_name,
                 size_slug=self.size,
                 site_id=self.site_id,
+                content_type_id=ContentType.objects.values('id').get(name=self.content_type_name)['id']
             )
             self._url = get_image_url(image_spec, ImageUrlSpec.CDN_URL)
 
@@ -70,7 +72,7 @@ class ImagesNode(template.Node):
     def render(self, context):
         images = Image.objects.filter(
             site_id=self.site_id if self.site_id else context.get('site_id'),
-            content_type_id=self.content_type_id if self.content_type_id else context.get(
+            content_type__name=self.content_type_name if self.content_type_name else context.get(
                 'content_type_name'),
             object_id=self.object_id if self.object_id else context.get('object_id'),
             size__name=self.size)

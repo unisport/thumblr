@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.core.files import File
 import os
 from thumblr import usecases, ImageMetadata
@@ -6,18 +7,19 @@ from thumblr.tests.base import BaseThumblrTestCase
 
 
 class TestUpdateImageUsecase(BaseThumblrTestCase):
+    content_type_id = ContentType.objects.values('id').get(name='image')['id']
 
     def setUp(self):
         super(TestUpdateImageUsecase, self).setUp()
 
-        squared = ImageSize(name=ImageSize.SQUARED)
+        squared = ImageSize(name=ImageSize.SQUARED, content_type_id=self.content_type_id)
         squared.save()
 
         self.another_image_metadata = ImageMetadata(
             file_name='costume.jpg',
             site_id=1,
             size_slug=ImageSize.SQUARED,
-            content_type_id=1,
+            content_type_id=self.content_type_id,
             object_id=1,
             is_main=True,
         )
@@ -69,7 +71,7 @@ class TestUpdateImageUsecase(BaseThumblrTestCase):
 
         images_data = usecases.get_all_images(
             ImageMetadata(
-                content_type_id=1,
+                content_type_id=self.content_type_id,
             )
         )
 

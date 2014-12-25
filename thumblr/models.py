@@ -33,7 +33,8 @@ class ImageSize(models.Model):
     content_type = models.ForeignKey(ContentType, related_name="image_sizes")
 
     def __unicode__(self):
-        return '%s' % self.name
+        return '{name} - {model}'.format(name=self.name,
+                                         model=self.content_type.name)
 
 
 def upload_to(inst, filename):
