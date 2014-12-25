@@ -49,6 +49,16 @@ def update_image(new_file, image_metadata):
     return get_image_file_metadata(image_file)
 
 
+@atomic
+def delete_images(image_metadata):
+    """
+    Removes all images that meet criteria of `image_metadata`
+    """
+    image_files = get_image_files_by_spec(image_metadata)
+    for image_file in image_files:
+        image_file.delete()
+
+
 def get_all_images(image_metadata):
     assert isinstance(image_metadata, ImageMetadata)
 
