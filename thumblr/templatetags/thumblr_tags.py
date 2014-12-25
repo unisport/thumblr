@@ -1,10 +1,10 @@
 from django import template
 from django.template.base import TemplateSyntaxError
+from thumblr.services.url import get_image_instance_url
 
 from thumblr.dto import ImageMetadata, ImageUrlSpec
 from thumblr.forms import ImageSizeForm
-from thumblr.models import ImageFile, ImageSize
-from thumblr.services.image_file_service import get_image_file_url
+from thumblr.models import ImageSize, Image
 from thumblr.usecases import get_image_url
 from thumblr.views import SizeTable
 from .utils import parse_kwargs
@@ -61,16 +61,16 @@ class ImagesNode(template.Node):
         self.object_id = object_id
 
     def render(self, context):
-        images = ImageFile.objects.filter(
-            image__site_id=self.site_id if self.site_id else context.get('site_id'),
-            image__content_type_id=self.content_type_id if self.content_type_id else context.get(
+        images = Image.objects.filter(
+            site_id=self.site_id if self.site_id else context.get('site_id'),
+            content_type_id=self.content_type_id if self.content_type_id else context.get(
                 'content_type_id'),
-            image__object_id=self.object_id if self.object_id else context.get('object_id'),
+            object_id=self.object_id if self.object_id else context.get('object_id'),
             size__name=self.size)
         """
         render updates context of the template and adds new variable with var_name that contains images
         """
-        urls = list(get_image_file_url(i, ImageUrlSpec.CDN_URL) for i in images)
+        urls = list(get_image_instance_url(i, ImageUrlSpec.CDN_URL) for i in images)
         context[self.var_name] = urls
 
 
