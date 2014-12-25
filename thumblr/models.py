@@ -30,7 +30,7 @@ class ImageSize(models.Model):
     name = models.CharField(max_length=30, primary_key=True)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
-    content_types = models.ManyToManyField(ContentType, related_name="image_sizes")
+    content_type = models.ForeignKey(ContentType, related_name="image_sizes")
 
     def __unicode__(self):
         return '%s' % self.name
