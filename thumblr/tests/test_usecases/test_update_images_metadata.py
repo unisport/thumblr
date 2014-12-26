@@ -11,7 +11,7 @@ class TestUpdateImageUsecase(BaseThumblrTestCase):
     def setUp(self):
         super(TestUpdateImageUsecase, self).setUp()
 
-        squared = ImageSize(name=ImageSize.SQUARED)
+        squared = ImageSize(name=ImageSize.SQUARED, content_type_id=1)
         squared.save()
 
         self.another_image_metadata = ImageMetadata(
