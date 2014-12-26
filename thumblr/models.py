@@ -117,10 +117,12 @@ def fill_hashed_image_fields(sender, instance, *args, **kwargs):
 
     uploaded_image = instance.image_in_storage
 
-    hashed_file_name = file_hash(uploaded_image) + os.path.splitext(uploaded_image.name)[-1]
+    content = uploaded_image if uploaded_image.name else uploaded_image._file
+
+    hashed_file_name = file_hash(content) + os.path.splitext(instance.original_file_name)[-1]
 
     file_by_hash = File(
-        uploaded_image,
+        content,
         hashed_file_name
     )
 
