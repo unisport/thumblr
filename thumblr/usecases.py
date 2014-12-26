@@ -5,12 +5,12 @@ data transfer objects)
 from django.db.transaction import atomic
 from thumblr.caching import cached
 from thumblr.dto import ImageMetadata
-from thumblr.services.cud import create_image, replace_uploaded_image
+from thumblr.services.cud import create_image, replace_uploaded_image, update_image_metadata
 from thumblr.services.query import get_image_metadata, get_images_by_spec
 from thumblr.services.url import get_image_instance_url
 
 
-__all__ = ['add_image', 'get_image_url', 'update_image']
+__all__ = ['add_image', 'get_image_url', 'update_image', 'update_images_metadata', 'delete_images', 'get_all_images']
 
 
 @atomic
@@ -42,10 +42,21 @@ def update_image(new_file, image_metadata):
     """
     assert isinstance(image_metadata, ImageMetadata)
 
-    image_file = get_images_by_spec(image_metadata)
+    image_file = get_images_by_spec(image_metadata, one=True)
     replace_uploaded_image(image_file, new_file)
 
     return get_image_metadata(image_file)
+
+
+@atomic
+def update_images_metadata(image_spec, updated_spec):
+    assert isinstance(image_spec, ImageMetadata)
+    assert isinstance(updated_spec, ImageMetadata)
+
+    images = get_images_by_spec(image_spec)
+
+    for image in images:
+        update_image_metadata(image, updated_spec)
 
 
 @atomic
@@ -61,5 +72,5 @@ def delete_images(image_metadata):
 def get_all_images(image_metadata):
     assert isinstance(image_metadata, ImageMetadata)
 
-    image_files = get_images_by_spec(image_metadata)
-    return map(get_image_metadata, image_files)
+    images = get_images_by_spec(image_metadata)
+    return map(get_image_metadata, images)

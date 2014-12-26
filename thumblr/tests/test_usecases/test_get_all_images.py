@@ -93,3 +93,10 @@ class TestUpdateImageUsecase(BaseThumblrTestCase):
         )
 
         self.assertEqual(len(images_data), 1)
+
+    def test_filter_reverse(self):
+        images_data = usecases.get_all_images(
+            ImageMetadata().invert()
+        )
+
+        self.assertEqual(len(images_data), 0)
