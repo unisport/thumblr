@@ -1,7 +1,7 @@
 import urllib
 from cStringIO import StringIO
 
-from PIL.Image import Image
+from PIL import Image
 from django.conf import settings
 from . import basic_operations
 from thumblr.image_processing.basic_operations import ImagePos, ImageDim, thumbnail

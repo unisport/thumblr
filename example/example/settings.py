@@ -65,7 +65,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
 )
 
-ROOT_URLCONF = 'example.example.urls'
+ROOT_URLCONF = 'example.urls'
 
 WSGI_APPLICATION = 'example.wsgi.application'
 
