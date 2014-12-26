@@ -10,23 +10,23 @@ from thumblr.templatetags.thumblr_tags import SizeAddingNode, thumblr_size_addin
 
 class TestSizeAddingTagParser(TestCase):
     def test_basic_usage(self):
-        token = Token(TOKEN_TEXT, "thumblr_add_sizes content_type_id=2")
+        token = Token(TOKEN_TEXT, "thumblr_add_sizes content_type_name='image'")
         node = thumblr_size_adding(None, token)
 
         self.assertIsInstance(node, SizeAddingNode)
-        self.assertEqual(node.content_type_id, u'2')
+        self.assertEqual(node.content_type_name, u'image')
 
 
 class TestSizeAddNode(TestCase):
     def setUp(self):
         self.content_type_id = 2
-        self.context = {'content_type_id': self.content_type_id, }
+        self.context = {'content_type_name': self.content_type_id, }
         self.factory = RequestFactory()
 
     def test_rendered_template(self):
         _template = template.Template(u"""
             {% load thumblr_tags %}
-            {% thumblr_add_sizes content_type_id=2 %}
+            {% thumblr_add_sizes content_type_name='image' %}
         """)
         self.context['request'] = HttpRequest()
         result = _template.render(Context(self.context))

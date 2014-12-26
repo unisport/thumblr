@@ -1,4 +1,6 @@
 from django import template
+from django.contrib.contenttypes.models import ContentType
+from django.forms import HiddenInput
 from django.template.base import TemplateSyntaxError
 from thumblr.services.url import get_image_instance_url
 
@@ -28,10 +30,11 @@ register.tag("thumblr", thumblr_tag_parser)
 
 
 class ThumblrNode(template.Node):
-    def __init__(self, file_name, size=None, site_id=None, main=True):
+    def __init__(self, file_name, size=None, site_id=None, content_type_name=None, main=True):
         self.file_name = file_name
         self.size = size
         self.site_id = site_id
+        self.content_type_name = content_type_name
         self.main = main
 
         self._url = None
@@ -43,6 +46,7 @@ class ThumblrNode(template.Node):
                 file_name=self.file_name,
                 size_slug=self.size,
                 site_id=self.site_id,
+                content_type_id=ContentType.objects.values('id').get(name=self.content_type_name)['id']
             )
             self._url = get_image_url(image_spec, ImageUrlSpec.CDN_URL)
 
@@ -53,18 +57,23 @@ class ThumblrNode(template.Node):
 
 
 class ImagesNode(template.Node):
-    def __init__(self, var_name='images', size='original', site_id=None, content_type_id=None, object_id=None):
+    def __init__(self, var_name='images', size='original',
+                 site_id=None,
+                 content_type_id=None,
+                 content_type_name=None,
+                 object_id=None):
         self.var_name = var_name
         self.size = size
         self.site_id = site_id
         self.content_type_id = content_type_id
+        self.content_type_name = content_type_name
         self.object_id = object_id
 
     def render(self, context):
         images = Image.objects.filter(
             site_id=self.site_id if self.site_id else context.get('site_id'),
-            content_type_id=self.content_type_id if self.content_type_id else context.get(
-                'content_type_id'),
+            content_type__name=self.content_type_name if self.content_type_name else context.get(
+                'content_type_name'),
             object_id=self.object_id if self.object_id else context.get('object_id'),
             size__name=self.size)
         """
@@ -95,14 +104,27 @@ def thumblr_imgs(parser, token):
 
 
 class SizeAddingNode(template.Node):
-    def __init__(self, content_type_id):
-        self.content_type_id = content_type_id
+    def __init__(self, content_type_name=None):
+        self.content_type_name = content_type_name
+        if content_type_name:
+            try:
+                self.content_type_id = ContentType.objects.values('id').get(name=content_type_name)['id']
+            except ContentType.DoesNotExist:
+                raise ContentType.DoesNotExist('Content Type from template tag with name "{}" '
+                                               'does not exist'.format(content_type_name))
+        else:
+            self.content_type_id = None
 
     def render(self, context):
-        context['form'] = ImageSizeForm()
+        context['form'] = ImageSizeForm(initial={'content_type': self.content_type_id})
+        context['form'].fields['content_type'].widget = HiddenInput()
         context['sizes'] = ImageSize.objects.all()
+        context['model'] = self.content_type_name
         t = template.loader.get_template('thumblr/sizes.html')
-        context['sizes'] = SizeTable(ImageSize.objects.all())
+        if self.content_type_id:
+            context['sizes'] = SizeTable(ImageSize.objects.filter(content_type__id=self.content_type_id))
+        else:
+            context['sizes'] = SizeTable(ImageSize.objects.all())
         return t.render(context)
 
 
@@ -110,23 +132,22 @@ class SizeAddingNode(template.Node):
 def thumblr_size_adding(parser, token):
     """
     Tag that returns a form for adding new size with a list of existing sizes for given content type
-    {% thumblr_add_sizes content_type_id=2 %}
+    {% thumblr_add_sizes content_type='Tile' %}
     """
     try:
         split_content = token.split_contents()
         if len(split_content) <= 1:
-            raise TemplateSyntaxError("content_type_id wasn't found in templeate tag. Check the syntax (Example: "
-                                      "thumblr_add_sizes content_type_id=1)")
-        tag_name, content_type_id_unparsed = split_content[0], split_content[-1]
-        key, content_type_id = content_type_id_unparsed.split('=')
-        if key != 'content_type_id':
+            return SizeAddingNode()
+        tag_name, content_type_name_unparsed = split_content[0], split_content[-1]
+        key, content_type_name = content_type_name_unparsed.split('=')
+        if key != 'content_type_name':
             raise TemplateSyntaxError(
-                "content_type_id coudn't be found in template tag. Check the syntax (Example: "
-                "thumblr_add_sizes content_type_id=1)")
+                "content_type_name coudn't be found in template tag. Check the syntax (Example: "
+                "thumblr_add_sizes content_type='Tile')")
     except IndexError:
-        raise TemplateSyntaxError("Only two arguments should be passes (Example: thumblr_add_sizes content_type_id=1)")
+        raise TemplateSyntaxError("Only two arguments should be passes (Example: thumblr_add_sizes content_type='Tile')")
 
-    return SizeAddingNode(content_type_id)
+    return SizeAddingNode(content_type_name.replace('"', '').replace("'", ''))
 
 
 

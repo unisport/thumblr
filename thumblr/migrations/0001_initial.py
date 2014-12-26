@@ -13,17 +13,9 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(max_length=30, primary_key=True)),
             ('width', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('height', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(related_name='image_sizes', to=orm['contenttypes.ContentType'])),
         ))
         db.send_create_signal(u'thumblr', ['ImageSize'])
-
-        # Adding M2M table for field content_types on 'ImageSize'
-        m2m_table_name = db.shorten_name(u'thumblr_imagesize_content_types')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('imagesize', models.ForeignKey(orm[u'thumblr.imagesize'], null=False)),
-            ('contenttype', models.ForeignKey(orm[u'contenttypes.contenttype'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['imagesize_id', 'contenttype_id'])
 
         # Adding model 'Image'
         db.create_table(u'thumblr_image', (
@@ -45,9 +37,6 @@ class Migration(SchemaMigration):
     def backwards(self, orm):
         # Deleting model 'ImageSize'
         db.delete_table(u'thumblr_imagesize')
-
-        # Removing M2M table for field content_types on 'ImageSize'
-        db.delete_table(db.shorten_name(u'thumblr_imagesize_content_types'))
 
         # Deleting model 'Image'
         db.delete_table(u'thumblr_image')
@@ -83,7 +72,7 @@ class Migration(SchemaMigration):
         },
         u'thumblr.imagesize': {
             'Meta': {'object_name': 'ImageSize'},
-            'content_types': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'image_sizes'", 'symmetrical': 'False', 'to': u"orm['contenttypes.ContentType']"}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'image_sizes'", 'to': u"orm['contenttypes.ContentType']"}),
             'height': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'primary_key': 'True'}),
             'width': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})

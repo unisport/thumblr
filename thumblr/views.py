@@ -1,5 +1,6 @@
 from django.contrib import messages
-from django.shortcuts import render
+from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import redirect
 from django.template.context import Context
 from django_tables2 import tables
 from thumblr.models import ImageSize
@@ -17,7 +18,6 @@ class SizeTable(tables.Table):
 def imagesizes(request):
     context = Context()
     context['form'] = ImageSizeForm()
-    context['sizes'] = SizeTable(ImageSize.objects.all())
     if request.method == 'POST':
         form = ImageSizeForm(request.POST, request.FILES)
         if form.is_valid():
@@ -25,9 +25,10 @@ def imagesizes(request):
             imagesize.name = form.data['name']
             imagesize.width = form.data['width']
             imagesize.height = form.data['height']
+            imagesize.content_type = ContentType.objects.get(pk=int(form.data['content_type']))
             imagesize.save()
             messages.info(request, 'Size was successfully added')
         else:
-            messages.error(request, "Please check the form values. Form is not valid.")
-    return render(request, "thumblr/sizes.html", context)
+            messages.error(request, form.errors)
+    return redirect(request.META['HTTP_REFERER'])
 

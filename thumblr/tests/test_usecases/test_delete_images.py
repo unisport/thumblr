@@ -11,7 +11,7 @@ class TestDeleteImagesUsecase(BaseThumblrTestCase):
     def setUp(self):
         super(TestDeleteImagesUsecase, self).setUp()
 
-        squared = ImageSize(name=ImageSize.SQUARED)
+        squared = ImageSize(name=ImageSize.SQUARED, content_type_id=2)
         squared.save()
 
         self.another_image_metadata = ImageMetadata(
@@ -46,7 +46,7 @@ class TestDeleteImagesUsecase(BaseThumblrTestCase):
         self.assertEqual(len(imgs), 2)
 
         delete_images(ImageMetadata(
-            content_type_id=1,
+            content_type_id=self.content_type_id,
             object_id=1,
         ))
 

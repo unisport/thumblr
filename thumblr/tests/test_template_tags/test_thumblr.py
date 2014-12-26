@@ -9,7 +9,7 @@ from thumblr.tests.base import BaseThumblrTestCase
 class TestThumblrTagParser(TestCase):
 
     def test_basic_usage(self):
-        token = Token(TOKEN_TEXT, "thumblr 'nike_boots.jpg' size='normal' main=False")
+        token = Token(TOKEN_TEXT, "thumblr 'nike_boots.jpg' size='normal' content_type_name='image' main=False")
         node = thumblr_tag_parser(None, token)
 
         self.assertIsInstance(node, ThumblrNode)
@@ -21,7 +21,7 @@ class TestThumblrTagParser(TestCase):
 class TestThumblrNode(BaseThumblrTestCase):
 
     def test_basic_usage(self):
-        token = Token(TOKEN_TEXT, "thumblr 'boots.jpg' size='original'")
+        token = Token(TOKEN_TEXT, "thumblr 'boots.jpg' size='original' content_type_name='image'")
         node = thumblr_tag_parser(MagicMock(), token)
         url = node.render(MagicMock())
 
@@ -30,7 +30,7 @@ class TestThumblrNode(BaseThumblrTestCase):
     def test_in_template(self):
         t = template.Template(u"""
             {% load thumblr_tags %}
-            {% thumblr 'boots.jpg' size='original' %}
+            {% thumblr 'boots.jpg' size='original' content_type_name='image' %}
         """)
         res = t.render(template.Context())
         print(res)
