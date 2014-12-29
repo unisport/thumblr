@@ -14,15 +14,15 @@ def get_images_by_spec(image_spec, one=False):
         r = get_image_by_hash(image_spec.image_hash)
         return r if one else [r]
 
-    q = Image.get_q(image_spec)
-
-    if not image_spec.inverse:
-        images = Image.objects.filter(q)
+    if image_spec.inverse:
+        q = Image.get_inverse_q(image_spec)
     else:
-        if image_spec.is_empty():  # exclude for empty q works not as expected
-            images = []
-        else:
-            images = Image.objects.exclude(q)
+        q = Image.get_q(image_spec)
+
+    if image_spec.inverse and image_spec.extend(content_type_id=None, object_id=None).is_empty():  # special case
+        images = []
+    else:
+        images = Image.objects.filter(q)
 
     if one:
         image = images.first()

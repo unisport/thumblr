@@ -79,6 +79,41 @@ class Image(models.Model):
         )
 
     @classmethod
+    def get_inverse_q(cls, image_spec):
+        """
+        *inside* set defined by content_type_id & object_id, selects images of different size, site, etc.
+        """
+        assert isinstance(image_spec, ImageMetadata)
+
+        q = Q()
+
+        if not image_spec.content_type_id is None:
+            q &= Q(content_type_id=image_spec.content_type_id)
+
+        if not image_spec.object_id is None:
+            q &= Q(object_id=image_spec.object_id)
+
+        if not image_spec.image_file_id is None:
+            q &= ~Q(pk=image_spec.image_file_id)
+
+        if not image_spec.original_file_name is None:
+            q &= ~Q(original_file_name=image_spec.original_file_name)
+
+        if not image_spec.site_id is None:
+            q &= ~Q(site_id=image_spec.site_id)
+
+        if not image_spec.image_hash is None:
+            q &= ~Q(image_hash=image_spec.image_hash)
+
+        if not image_spec.is_main is None:
+            q &= ~Q(is_main=image_spec.is_main)
+
+        if not image_spec.size_slug is None:
+            q &= ~Q(size__name=image_spec.size_slug)
+
+        return q
+
+    @classmethod
     def get_q(cls, image_spec):
         assert isinstance(image_spec, ImageMetadata)
 

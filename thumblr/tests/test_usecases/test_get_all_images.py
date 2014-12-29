@@ -2,12 +2,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files import File
 import os
 from thumblr import usecases, ImageMetadata
-from thumblr.models import ImageSize
+from thumblr.models import ImageSize, Image
 from thumblr.tests.base import BaseThumblrTestCase
 
 
 class TestUpdateImageUsecase(BaseThumblrTestCase):
-    content_type_id = ContentType.objects.values('id').get(name='image')['id']
+    content_type_id = ContentType.objects.get_for_model(Image).id
 
     def setUp(self):
         super(TestUpdateImageUsecase, self).setUp()
@@ -96,7 +96,7 @@ class TestUpdateImageUsecase(BaseThumblrTestCase):
 
     def test_filter_reverse(self):
         images_data = usecases.get_all_images(
-            ImageMetadata().invert()
+            ImageMetadata(content_type_id=self.content_type_id, object_id=1).invert()
         )
 
         self.assertEqual(len(images_data), 0)

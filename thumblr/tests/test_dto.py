@@ -34,8 +34,7 @@ class TestImageDTO(TestCase):
 
     def test_empty(self):
         self.assertTrue(ImageMetadata())
-        self.assertTrue(ImageMetadata().invert())
         self.assertTrue(ImageMetadata(site_id=1, content_type_id=1, object_id=1).invert())
         self.assertTrue(ImageMetadata(site_id=1, content_type_id=1))
-        self.assertTrue(ImageMetadata(size_slug=ImageSize.SQUARED).invert())
+        self.assertTrue(ImageMetadata(size_slug=ImageSize.SQUARED))
 

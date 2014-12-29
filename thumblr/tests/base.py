@@ -20,7 +20,7 @@ class BaseThumblrTestCase(TestCase):
             os.path.dirname(__file__), "data", "boots.jpg"
         )
         self.site_id = 1
-        self.content_type_id = ContentType.objects.values('id').get(name='image')['id']
+        self.content_type_id = ContentType.objects.get_for_model(Image).id
         self.object_id = 1
 
         original_size = ImageSize(name=ImageSize.ORIGINAL, content_type_id=self.content_type_id)

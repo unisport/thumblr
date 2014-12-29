@@ -41,6 +41,14 @@ class ImageMetadata(object):
         )
 
     def invert(self):
+        """
+        This would revers selection inside fixed content_type_id and object_id. So you *must* specify content_type_id
+        and object_id
+        """
+
+        assert not self.content_type_id is None, "Inverting dto without content_type_id is UNSAFE"
+        assert not self.object_id is None, "Inverting dto without object_id is UNSAFE"
+
         return self.extend(inverse=not self.inverse)
 
     def extend(self, **kwargs):
