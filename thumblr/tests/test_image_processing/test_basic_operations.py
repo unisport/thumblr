@@ -5,7 +5,7 @@ from django.test import TestCase
 import os
 from thumblr.image_processing import basic_operations
 from thumblr.tests.base import TuplesCompareMixin
-from thumblr.image_processing.basic_operations import ImageDim, ImagePos
+from thumblr.image_processing.basic_operations import ImageDim, ImagePos, horizontal_flip
 
 
 class TestSquarify(TestCase, TuplesCompareMixin):
@@ -157,4 +157,41 @@ class TestThumbnail(TestCase, TuplesCompareMixin):
                     self.thumbnail_etalon.getpixel((x, y)),
                     delta=30,  # the smaller thumbnail => the bigger color deviation
                 )
+
+
+class TestCropping(TestCase, TuplesCompareMixin):
+
+    def setUp(self):
+        self.image_file_path = os.path.join(
+            os.path.dirname(__file__), "..", "data", "rect_img.jpg"
+        )
+
+        file_content = None
+        with open(self.image_file_path) as f:
+             file_content = f.read()
+
+        self.image_data = StringIO.StringIO(file_content)
+        self.boots_pil_image = Image.open(self.image_data)
+
+    def test_basic(self):
+
+        res = horizontal_flip(self.boots_pil_image)
+
+        # self.boots_pil_image.show()
+        # res.show()
+
+        self.assertEqual(
+            self.boots_pil_image.size,
+            res.size,
+        )
+
+        self.assertAlmostEqualTuples(
+            self.boots_pil_image.getpixel((50, 50)),
+            res.getpixel((res.size[0] - 50, 50)),
+        )
+
+        self.assertAlmostEqualTuples(
+            self.boots_pil_image.getpixel((500, 70)),
+            res.getpixel((res.size[0] - 500, 70)),
+        )
 
