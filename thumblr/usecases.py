@@ -10,7 +10,8 @@ from thumblr.services.query import get_image_metadata, get_images_by_spec
 from thumblr.services.url import get_image_instance_url
 
 
-__all__ = ['add_image', 'get_image_url', 'update_image', 'update_images_metadata', 'delete_images', 'get_all_images']
+__all__ = ['add_image', 'get_image_url', 'update_image', 'update_images_metadata', 'delete_images',
+           'get_all_images', 'get_images_of_sizes']
 
 
 @atomic
