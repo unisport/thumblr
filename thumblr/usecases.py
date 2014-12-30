@@ -74,3 +74,21 @@ def get_all_images(image_metadata):
 
     images = get_images_by_spec(image_metadata)
     return map(get_image_metadata, images)
+
+
+def get_images_of_sizes(image_metadata):
+    """
+    Retrieves all images by image_metadata as dict like:
+    {
+      image_size_slug: ImageMetadata,
+      ...
+    }
+    """
+    assert isinstance(image_metadata, ImageMetadata)
+
+    res = {}
+    for image in get_all_images(image_metadata):
+        assert isinstance(image, ImageMetadata)
+        res[image.size_slug] = image
+
+    return res
