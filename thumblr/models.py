@@ -91,7 +91,10 @@ class Image(models.Model):
             q &= Q(original_file_name=image_spec.original_file_name)
 
         if not image_spec.site_id is None:
-            q &= Q(site_id=image_spec.site_id)
+            if image_spec.site_id == ImageMetadata.SITE_IS_NULL:
+                q &= Q(site_id__isnull=True)
+            else:
+                q &= Q(site_id=image_spec.site_id)
 
         if not image_spec.content_type_id is None:
             q &= Q(content_type_id=image_spec.content_type_id)

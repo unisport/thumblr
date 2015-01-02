@@ -93,3 +93,18 @@ class TestUpdateImageUsecase(BaseThumblrTestCase):
         )
 
         self.assertEqual(len(images_data), 1)
+
+    def test_filter_site_is_null(self):
+        images_data = usecases.get_all_images(
+            ImageMetadata(
+                site_id=ImageMetadata.SITE_IS_NULL,
+            )
+        )
+
+        self.assertEqual(len(images_data), 0)
+
+        images_data = usecases.get_all_images(
+            ImageMetadata()
+        )
+
+        self.assertEqual(len(images_data), 2)

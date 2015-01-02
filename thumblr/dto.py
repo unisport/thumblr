@@ -9,6 +9,8 @@ class ImageMetadata(object):
     Image and ImageFile should never go out of thumblr application and appear anywhere else.
     """
 
+    SITE_IS_NULL = '*is null site*'
+
     def __init__(self,
                  image_file_id=None,
                  image_hash=None,
