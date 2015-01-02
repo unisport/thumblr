@@ -61,13 +61,23 @@ def update_images_metadata(image_spec, updated_spec):
 
 
 @atomic
-def delete_images(image_metadata):
+def delete_images(image_metadata, excepted=None):
     """
     Removes all images that meet criteria of `image_metadata`
     """
+    assert isinstance(image_metadata, ImageMetadata)
+    assert isinstance(excepted, (type(None), ImageMetadata))
+
     image_files = get_images_by_spec(image_metadata)
+
+    if excepted is None:
+        except_file_ids = []
+    else:
+        except_file_ids = [item.id for item in get_images_by_spec(excepted)]
+
     for image_file in image_files:
-        image_file.delete()
+        if not image_file.id in except_file_ids:
+            image_file.delete()
 
 
 def get_all_images(image_metadata):

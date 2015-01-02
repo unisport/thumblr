@@ -30,26 +30,12 @@ class ImageMetadata(object):
         self.size_slug = size_slug
         self.is_main = is_main
 
-        # for filtering
-        self.inverse = False
-
     def __str__(self):
         return "{image_file_id}::{file_name}::{size}".format(
             image_file_id=self.image_file_id,
             file_name=self.original_file_name,
             size=self.size_slug,
         )
-
-    def invert(self):
-        """
-        This would revers selection inside fixed content_type_id and object_id. So you *must* specify content_type_id
-        and object_id
-        """
-
-        assert not self.content_type_id is None, "Inverting dto without content_type_id is UNSAFE"
-        assert not self.object_id is None, "Inverting dto without object_id is UNSAFE"
-
-        return self.extend(inverse=not self.inverse)
 
     def extend(self, **kwargs):
         cpy = deepcopy(self)

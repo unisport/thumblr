@@ -53,31 +53,66 @@ class TestDeleteImagesUsecase(BaseThumblrTestCase):
         imgs = get_all_images(ImageMetadata())
         self.assertEqual(len(imgs), 1)
 
-    def test_delete_by_related_object_reversed(self):
+    def test_delete_by_related_object_except(self):
         imgs = get_all_images(ImageMetadata())
         self.assertEqual(len(imgs), 2)
 
-        delete_images(ImageMetadata(
-            content_type_id=self.content_type_id,
-            object_id=2,
-            size_slug=ImageSize.ORIGINAL,
-        ).invert())
+        delete_images(
+            ImageMetadata(
+                content_type_id=self.content_type_id,
+                object_id=2,
+            ), excepted=ImageMetadata(
+                content_type_id=self.content_type_id,
+                object_id=2,
+                size_slug=ImageSize.ORIGINAL,
+            )
+        )
 
         imgs = get_all_images(ImageMetadata())
         self.assertEqual(len(imgs), 1)
 
-    def test_delete_by_related_object_reversed_2(self):
+    def test_delete_by_related_object_except_2(self):
         imgs = get_all_images(ImageMetadata())
         self.assertEqual(len(imgs), 2)
 
-        delete_images(ImageMetadata(
-            content_type_id=self.content_type_id,
-            object_id=2,
-            size_slug=ImageSize.SQUARED,
-        ).invert())
+        delete_images(
+            ImageMetadata(
+                content_type_id=self.content_type_id,
+                object_id=2,
+            ),
+            excepted=ImageMetadata(
+                content_type_id=self.content_type_id,
+                object_id=2,
+                size_slug=ImageSize.SQUARED,
+            ),
+        )
 
         imgs = get_all_images(ImageMetadata())
         self.assertEqual(len(imgs), 2)
+
+    def test_delete_by_related_object_except_all(self):
+        imgs = get_all_images(ImageMetadata())
+        self.assertEqual(len(imgs), 2)
+
+        delete_images(
+            ImageMetadata(),
+            excepted=ImageMetadata(),
+        )
+
+        imgs = get_all_images(ImageMetadata())
+        self.assertEqual(len(imgs), 2)
+
+    def test_delete_by_related_object_except_miss(self):
+        imgs = get_all_images(ImageMetadata())
+        self.assertEqual(len(imgs), 2)
+
+        delete_images(
+            ImageMetadata(),
+            excepted=ImageMetadata(site_id=99999),
+        )
+
+        imgs = get_all_images(ImageMetadata())
+        self.assertEqual(len(imgs), 0)
 
     def test_delete_by_size(self):
         imgs = get_all_images(ImageMetadata())
