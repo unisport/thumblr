@@ -10,7 +10,8 @@ from thumblr.services.query import get_image_metadata, get_images_by_spec
 from thumblr.services.url import get_image_instance_url
 
 
-__all__ = ['add_image', 'get_image_url', 'update_image', 'update_images_metadata', 'delete_images', 'get_all_images']
+__all__ = ['add_image', 'get_image_url', 'update_image', 'update_images_metadata', 'delete_images',
+           'get_all_images', 'get_images_of_sizes']
 
 
 @atomic
@@ -60,13 +61,23 @@ def update_images_metadata(image_spec, updated_spec):
 
 
 @atomic
-def delete_images(image_metadata):
+def delete_images(image_metadata, excepted=None):
     """
     Removes all images that meet criteria of `image_metadata`
     """
+    assert isinstance(image_metadata, ImageMetadata)
+    assert isinstance(excepted, (type(None), ImageMetadata))
+
     image_files = get_images_by_spec(image_metadata)
+
+    if excepted is None:
+        except_file_ids = []
+    else:
+        except_file_ids = [item.id for item in get_images_by_spec(excepted)]
+
     for image_file in image_files:
-        image_file.delete()
+        if not image_file.id in except_file_ids:
+            image_file.delete()
 
 
 def get_all_images(image_metadata):
@@ -74,3 +85,21 @@ def get_all_images(image_metadata):
 
     images = get_images_by_spec(image_metadata)
     return map(get_image_metadata, images)
+
+
+def get_images_of_sizes(image_metadata):
+    """
+    Retrieves all images by image_metadata as dict like:
+    {
+      image_size_slug: ImageMetadata,
+      ...
+    }
+    """
+    assert isinstance(image_metadata, ImageMetadata)
+
+    res = {}
+    for image in get_all_images(image_metadata):
+        assert isinstance(image, ImageMetadata)
+        res[image.size_slug] = image
+
+    return res

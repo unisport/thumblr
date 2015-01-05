@@ -26,16 +26,9 @@ class TestImageDTO(TestCase):
         self.assertEqual(updated_dto.size_slug, ImageSize.ORIGINAL)
         self.assertEqual(updated_dto.content_type_id, 99)
 
-    def test_invert(self):
-        dto = ImageMetadata(site_id=1, content_type_id=1, object_id=1)
-        new_dto = dto.invert()
-
-        self.assertNotEqual(dto.inverse, new_dto.inverse)
-
     def test_empty(self):
         self.assertTrue(ImageMetadata())
-        self.assertTrue(ImageMetadata().invert())
-        self.assertTrue(ImageMetadata(site_id=1, content_type_id=1, object_id=1).invert())
+        self.assertTrue(ImageMetadata(site_id=1, content_type_id=1, object_id=1))
         self.assertTrue(ImageMetadata(site_id=1, content_type_id=1))
-        self.assertTrue(ImageMetadata(size_slug=ImageSize.SQUARED).invert())
+        self.assertTrue(ImageMetadata(size_slug=ImageSize.SQUARED))
 

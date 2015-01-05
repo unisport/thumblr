@@ -9,6 +9,8 @@ class ImageMetadata(object):
     Image and ImageFile should never go out of thumblr application and appear anywhere else.
     """
 
+    SITE_IS_NULL = '*is null site*'
+
     def __init__(self,
                  image_file_id=None,
                  image_hash=None,
@@ -30,18 +32,12 @@ class ImageMetadata(object):
         self.size_slug = size_slug
         self.is_main = is_main
 
-        # for filtering
-        self.inverse = False
-
     def __str__(self):
         return "{image_file_id}::{file_name}::{size}".format(
             image_file_id=self.image_file_id,
             file_name=self.original_file_name,
             size=self.size_slug,
         )
-
-    def invert(self):
-        return self.extend(inverse=not self.inverse)
 
     def extend(self, **kwargs):
         cpy = deepcopy(self)

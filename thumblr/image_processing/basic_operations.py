@@ -81,3 +81,8 @@ def thumbnail(original_img, thumbnail_size=ImageDim(width=100, height=100)):
 
     return res_image
 
+
+def horizontal_flip(image):
+    assert isinstance(image, Image.Image)
+
+    return image.transpose(Image.FLIP_LEFT_RIGHT)

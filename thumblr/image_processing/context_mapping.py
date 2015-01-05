@@ -2,6 +2,8 @@ import cStringIO
 import urllib
 from PIL import Image
 from django.core.files import File
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from thumblr import get_image_url, ImageMetadata, ImageUrlSpec
 
 
@@ -26,4 +28,4 @@ def get_django_file_from_pil_image(pil_image, format='JPEG'):
 
     stream.seek(0)
 
-    return File(stream)
+    return ContentFile(stream.read())

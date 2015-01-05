@@ -16,13 +16,7 @@ def get_images_by_spec(image_spec, one=False):
 
     q = Image.get_q(image_spec)
 
-    if not image_spec.inverse:
-        images = Image.objects.filter(q)
-    else:
-        if image_spec.is_empty():  # exclude for empty q works not as expected
-            images = []
-        else:
-            images = Image.objects.exclude(q)
+    images = Image.objects.filter(q)
 
     if one:
         image = images.first()

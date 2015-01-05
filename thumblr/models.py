@@ -91,7 +91,10 @@ class Image(models.Model):
             q &= Q(original_file_name=image_spec.original_file_name)
 
         if not image_spec.site_id is None:
-            q &= Q(site_id=image_spec.site_id)
+            if image_spec.site_id == ImageMetadata.SITE_IS_NULL:
+                q &= Q(site_id__isnull=True)
+            else:
+                q &= Q(site_id=image_spec.site_id)
 
         if not image_spec.content_type_id is None:
             q &= Q(content_type_id=image_spec.content_type_id)
@@ -117,10 +120,12 @@ def fill_hashed_image_fields(sender, instance, *args, **kwargs):
 
     uploaded_image = instance.image_in_storage
 
-    hashed_file_name = file_hash(uploaded_image) + os.path.splitext(uploaded_image.name)[-1]
+    content = uploaded_image if uploaded_image.name else uploaded_image._file
+
+    hashed_file_name = file_hash(content) + os.path.splitext(instance.original_file_name)[-1]
 
     file_by_hash = File(
-        uploaded_image,
+        content,
         hashed_file_name
     )
 
