@@ -132,7 +132,7 @@ class SizeAddingNode(template.Node):
 def thumblr_size_adding(parser, token):
     """
     Tag that returns a form for adding new size with a list of existing sizes for given content type
-    {% thumblr_add_sizes content_type='Tile' %}
+    {% thumblr_add_sizes content_type_name='Tile' %}
     """
     try:
         split_content = token.split_contents()
@@ -143,9 +143,10 @@ def thumblr_size_adding(parser, token):
         if key != 'content_type_name':
             raise TemplateSyntaxError(
                 "content_type_name coudn't be found in template tag. Check the syntax (Example: "
-                "thumblr_add_sizes content_type='Tile')")
+                "thumblr_add_sizes content_type_name='Tile')")
     except IndexError:
-        raise TemplateSyntaxError("Only two arguments should be passes (Example: thumblr_add_sizes content_type='Tile')")
+        raise TemplateSyntaxError("Only two arguments should be passes "
+                                  "(Example: thumblr_add_sizes content_type_name='Tile')")
 
     return SizeAddingNode(content_type_name.replace('"', '').replace("'", ''))
 

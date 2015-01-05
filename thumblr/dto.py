@@ -21,7 +21,7 @@ class ImageMetadata(object):
                  content_type_id=None,
                  object_id=None,
                  is_main=None,
-                 ):
+    ):
         self.image_file_id = image_file_id
         self.image_hash = image_hash
 
@@ -33,10 +33,12 @@ class ImageMetadata(object):
         self.is_main = is_main
 
     def __str__(self):
-        return "{image_file_id}::{file_name}::{size}".format(
+        return "{image_file_id}::{file_name}::{content_type}::{object_id}::{size}".format(
             image_file_id=self.image_file_id,
             file_name=self.original_file_name,
             size=self.size_slug,
+            content_type=self.content_type_id,
+            object_id=self.object_id
         )
 
     def extend(self, **kwargs):

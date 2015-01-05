@@ -64,6 +64,8 @@ def __drop_url_cache(sender, instance, *args, **kwargs):
                 image_file_id=old_inst.id,
                 file_name=old_inst.original_file_name,
                 size_slug=old_inst.size.name,
+                content_type_id=old_inst.content_type_id,
+                object_id=old_inst.object_id,
             ),
             ImageUrlSpec.CDN_URL,
         )
