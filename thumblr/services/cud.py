@@ -1,5 +1,7 @@
+import os
 from thumblr.dto import ImageMetadata
 from thumblr.models import Image, ImageSize
+from thumblr.utils.hash import file_hash
 
 
 def create_image(uploaded_file, image_metadata):
@@ -12,7 +14,13 @@ def create_image(uploaded_file, image_metadata):
     image.content_type_id = image_metadata.content_type_id
     image.object_id = image_metadata.object_id
 
-    image.image_in_storage = uploaded_file
+    image.image_hash = file_hash(uploaded_file) + os.path.splitext(image_metadata.original_file_name)[-1]
+
+    if uploaded_file.name:
+        image.image_in_storage.save(uploaded_file.name, uploaded_file, False)
+
+    image.image_hash_in_storage.save(image.image_hash, uploaded_file, False)
+
     image.is_main = image_metadata.is_main or False
 
     original_size = ImageSize.objects.get(name=image_metadata.size_slug)
@@ -26,7 +34,13 @@ def create_image(uploaded_file, image_metadata):
 def replace_uploaded_image(image, new_uploaded_image):
     assert isinstance(image, Image)
 
-    image.image_in_storage = new_uploaded_image
+    image.image_hash = file_hash(new_uploaded_image) + os.path.splitext(image.original_file_name)[-1]
+
+    if new_uploaded_image.name:
+        image.image_in_storage.save(new_uploaded_image.name, new_uploaded_image, False)
+
+    image.image_hash_in_storage.save(image.image_hash, new_uploaded_image, False)
+
     image.save()
 
 

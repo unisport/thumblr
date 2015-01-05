@@ -5,7 +5,7 @@ from django.core.files import File
 from django.db import models
 from django.conf import settings
 from django.db.models import Q
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django_boto.s3.storage import S3Storage
 from jsonfield import JSONField
@@ -48,6 +48,17 @@ def upload_to(inst, filename):
     )
 
 
+def upload_to_hashed(inst, filename):
+    assert isinstance(inst, Image)
+
+    # object id used to enalbe uploading of file of same names
+    return u'{content_type}/{object_id}/{filename}'.format(
+        content_type=inst.content_type.name.replace(u" ", u"_"),
+        object_id=inst.object_id,
+        filename=inst.image_hash,
+    )
+
+
 class Image(models.Model):
 
     # site is optional here. Pictures should be available across all sites.
@@ -61,7 +72,7 @@ class Image(models.Model):
     original_file_name = models.CharField(max_length=256)
 
     image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
-    image_hash_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
+    image_hash_in_storage = models.ImageField(storage=s3, upload_to=upload_to_hashed)
     image_hash = models.CharField(max_length=256)
     size = models.ForeignKey(ImageSize)
     meta_data = JSONField(null=True, blank=True)
@@ -112,24 +123,3 @@ class Image(models.Model):
             q &= Q(size__name=image_spec.size_slug)
 
         return q
-
-
-@receiver(pre_save, sender=Image)
-def fill_hashed_image_fields(sender, instance, *args, **kwargs):
-    assert isinstance(instance, Image)
-
-    uploaded_image = instance.image_in_storage
-
-    content = uploaded_image if uploaded_image.name else uploaded_image._file
-
-    hashed_file_name = file_hash(content) + os.path.splitext(instance.original_file_name)[-1]
-
-    file_by_hash = File(
-        content,
-        hashed_file_name
-    )
-
-    instance.image_hash_in_storage = file_by_hash
-
-    # File with hashed name and original file extension
-    instance.image_hash = hashed_file_name
