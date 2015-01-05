@@ -66,14 +66,18 @@ def delete_images(image_metadata, excepted=None):
     Removes all images that meet criteria of `image_metadata`
     """
     assert isinstance(image_metadata, ImageMetadata)
-    assert isinstance(excepted, (type(None), ImageMetadata))
+    assert isinstance(excepted, (type(None), ImageMetadata, list))
 
     image_files = get_images_by_spec(image_metadata)
 
     if excepted is None:
         except_file_ids = []
-    else:
+    elif isinstance(excepted, ImageMetadata):
         except_file_ids = [item.id for item in get_images_by_spec(excepted)]
+    else:
+        except_file_ids = []
+        for d in excepted:
+            except_file_ids.extend([item.id for item in get_images_by_spec(d)])
 
     for image_file in image_files:
         if not image_file.id in except_file_ids:

@@ -124,3 +124,15 @@ class TestDeleteImagesUsecase(BaseThumblrTestCase):
 
         imgs = get_all_images(ImageMetadata())
         self.assertEqual(len(imgs), 1)
+
+    def test_delete_except_multi(self):
+        imgs = get_all_images(ImageMetadata())
+        self.assertEqual(len(imgs), 2)
+
+        delete_images(ImageMetadata(), [
+            ImageMetadata(size_slug=ImageSize.SQUARED,),
+            ImageMetadata(size_slug=ImageSize.ORIGINAL,)
+        ])
+
+        imgs = get_all_images(ImageMetadata())
+        self.assertEqual(len(imgs), 2)
