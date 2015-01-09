@@ -10,6 +10,9 @@ install:
   - pip install -r requirements/requirements.txt
   - pip install -r requirements/test_requirements.txt
 
+before_script:
+  - python example/manage.py syncdb
+
 # command to run tests, e.g. python setup.py test
 script:
   - DEBUG=false python example/manage.py test thumblr.tests
