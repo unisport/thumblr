@@ -1,4 +1,4 @@
-#Thumblr ![Build Status](https://magnum.travis-ci.com/unisport/thumblr.svg?token=qsbi8v1ehwb8Bju5YWQ6&branch=master)
+#Thumblr [![Build Status](https://magnum.travis-ci.com/unisport/thumblr.svg?token=qsbi8v1ehwb8Bju5YWQ6&branch=master)](https://magnum.travis-ci.com/unisport/thumblr)
 
 Thumblr is an app that provides an abstraction to deal with images throughout the storefront project. The image below illustates the components involved.  
 
