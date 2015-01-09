@@ -3,7 +3,7 @@ from thumblr.exceptions import NoSuchImageException
 from thumblr.models import Image
 
 
-def get_images_by_spec(image_spec, one=False):
+def get_images_by_spec(image_spec, one=False, ordered=False):
     assert isinstance(image_spec, ImageMetadata)
 
     if not image_spec.image_file_id is None:
@@ -17,6 +17,9 @@ def get_images_by_spec(image_spec, one=False):
     q = Image.get_q(image_spec)
 
     images = Image.objects.filter(q)
+
+    if ordered:
+        images = images.order_by('order_number')
 
     if one:
         image = images.first()
@@ -50,11 +53,12 @@ def get_image_metadata(image):
         image_file_id=image.id,
         image_hash=image.image_hash,
 
-        file_name=image.original_file_name,
+        file_name=image.file_name,
         site_id=image.site_id,
         size_slug=image.size.name,
         content_type_id=image.content_type_id,
         object_id=image.object_id,
 
         is_main=image.is_main,
+        order_number=image.order_number,
     )

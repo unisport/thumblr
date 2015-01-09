@@ -23,13 +23,14 @@ class Migration(SchemaMigration):
             ('site', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['sites.Site'], null=True)),
             ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True, blank=True)),
             ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-            ('original_file_name', self.gf('django.db.models.fields.CharField')(max_length=256)),
+            ('file_name', self.gf('django.db.models.fields.CharField')(default='', max_length=256)),
             ('image_in_storage', self.gf('django.db.models.fields.files.ImageField')(max_length=100)),
             ('image_hash_in_storage', self.gf('django.db.models.fields.files.ImageField')(max_length=100)),
             ('image_hash', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('size', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['thumblr.ImageSize'])),
             ('meta_data', self.gf('jsonfield.fields.JSONField')(null=True, blank=True)),
             ('is_main', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('order_number', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
         ))
         db.send_create_signal(u'thumblr', ['Image'])
 
@@ -59,6 +60,7 @@ class Migration(SchemaMigration):
         u'thumblr.image': {
             'Meta': {'object_name': 'Image'},
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']", 'null': 'True', 'blank': 'True'}),
+            'file_name': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '256'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image_hash': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'image_hash_in_storage': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
@@ -66,7 +68,7 @@ class Migration(SchemaMigration):
             'is_main': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'meta_data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
             'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'original_file_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'order_number': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'site': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sites.Site']", 'null': 'True'}),
             'size': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['thumblr.ImageSize']"})
         },

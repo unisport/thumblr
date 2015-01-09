@@ -69,21 +69,22 @@ class Image(models.Model):
     object_id = models.PositiveIntegerField(null=True, blank=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    original_file_name = models.CharField(max_length=256)
+    file_name = models.CharField(max_length=256, default='')
 
     image_in_storage = models.ImageField(storage=s3, upload_to=upload_to)
     image_hash_in_storage = models.ImageField(storage=s3, upload_to=upload_to_hashed)
     image_hash = models.CharField(max_length=256)
     size = models.ForeignKey(ImageSize)
     meta_data = JSONField(null=True, blank=True)
+
     is_main = models.BooleanField(default=False)
+    order_number = models.PositiveIntegerField(default=0)
 
     def __unicode__(self):
-        return u"%s::%s::%s::%s::%s::%s::%s" % (
+        return u"%s::%s::%s::%s::%s::%s" % (
             self.id,
-            self.original_file_name,
+            self.file_name,
             self.site.name,
-            self.original_file_name,
             self.image_hash,
             self.id,
             self.size.name,
@@ -98,8 +99,8 @@ class Image(models.Model):
         if not image_spec.image_file_id is None:
             q &= Q(pk=image_spec.image_file_id)
 
-        if not image_spec.original_file_name is None:
-            q &= Q(original_file_name=image_spec.original_file_name)
+        if not image_spec.file_name is None:
+            q &= Q(file_name=image_spec.file_name)
 
         if not image_spec.site_id is None:
             if image_spec.site_id == ImageMetadata.SITE_IS_NULL:

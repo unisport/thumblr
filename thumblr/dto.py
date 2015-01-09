@@ -21,21 +21,23 @@ class ImageMetadata(object):
                  content_type_id=None,
                  object_id=None,
                  is_main=None,
+                 order_number=None,
     ):
         self.image_file_id = image_file_id
         self.image_hash = image_hash
 
-        self.original_file_name = file_name
+        self.file_name = file_name
         self.site_id = site_id
         self.content_type_id = content_type_id
         self.object_id = object_id
         self.size_slug = size_slug
         self.is_main = is_main
+        self.order_number = order_number
 
     def __str__(self):
         return "{image_file_id}::{file_name}::{content_type}::{object_id}::{size}".format(
             image_file_id=self.image_file_id,
-            file_name=self.original_file_name,
+            file_name=self.file_name,
             size=self.size_slug,
             content_type=self.content_type_id,
             object_id=self.object_id
@@ -51,7 +53,7 @@ class ImageMetadata(object):
     def is_empty(self):
         return \
             self.image_file_id is None and \
-            self.original_file_name is None and \
+            self.file_name is None and \
             self.site_id is None and \
             self.content_type_id is None and \
             self.object_id is None and \

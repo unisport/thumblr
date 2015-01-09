@@ -9,12 +9,12 @@ def create_image(uploaded_file, image_metadata):
 
     image = Image()
 
-    image.original_file_name = image_metadata.original_file_name
+    image.file_name = image_metadata.file_name
     image.site_id = image_metadata.site_id
     image.content_type_id = image_metadata.content_type_id
     image.object_id = image_metadata.object_id
 
-    image.image_hash = file_hash(uploaded_file) + os.path.splitext(image_metadata.original_file_name)[-1]
+    image.image_hash = file_hash(uploaded_file) + os.path.splitext(image_metadata.file_name)[-1]
 
     if uploaded_file.name:
         image.image_in_storage.save(uploaded_file.name, uploaded_file, False)
@@ -22,6 +22,9 @@ def create_image(uploaded_file, image_metadata):
     image.image_hash_in_storage.save(image.image_hash, uploaded_file, False)
 
     image.is_main = image_metadata.is_main or False
+
+    if image_metadata.order_number:
+        image.order_number = image_metadata.order_number
 
     original_size = ImageSize.objects.get(name=image_metadata.size_slug)
     image.size = original_size
@@ -34,7 +37,7 @@ def create_image(uploaded_file, image_metadata):
 def replace_uploaded_image(image, new_uploaded_image):
     assert isinstance(image, Image)
 
-    image.image_hash = file_hash(new_uploaded_image) + os.path.splitext(image.original_file_name)[-1]
+    image.image_hash = file_hash(new_uploaded_image) + os.path.splitext(image.file_name)[-1]
 
     if new_uploaded_image.name:
         image.image_in_storage.save(new_uploaded_image.name, new_uploaded_image, False)
@@ -48,8 +51,8 @@ def update_image_metadata(image, updated_spec):
     assert isinstance(image, Image)
     assert isinstance(updated_spec, ImageMetadata)
 
-    if not updated_spec.original_file_name is None:
-        image.original_file_name = updated_spec.original_file_name
+    if not updated_spec.file_name is None:
+        image.file_name = updated_spec.file_name
 
     if not updated_spec.site_id is None:
         image.site_id = updated_spec.site_id

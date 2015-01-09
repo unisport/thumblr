@@ -84,10 +84,10 @@ def delete_images(image_metadata, excepted=None):
             image_file.delete()
 
 
-def get_all_images(image_metadata):
+def get_all_images(image_metadata, ordered=False):
     assert isinstance(image_metadata, ImageMetadata)
 
-    images = get_images_by_spec(image_metadata)
+    images = get_images_by_spec(image_metadata, ordered=ordered)
     return map(get_image_metadata, images)
 
 
