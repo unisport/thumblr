@@ -1,0 +1,15 @@
+language: python
+python:
+  - "2.7"
+
+notifications:
+  hipchat: xr7hM192xeOrCGVe4j66SnDbI52iGgPXRC8A65d2@[Travis CI]
+
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install:
+  - pip install -r requirements/requirements.txt
+  - pip install -r requirements/test_requirements.txt
+
+# command to run tests, e.g. python setup.py test
+script:
+  - DEBUG=false python example/manage.py test thumblr.tests
