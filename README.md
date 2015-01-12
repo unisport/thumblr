@@ -5,7 +5,7 @@ Thumblr is an app that provides an abstraction to deal with images throughout th
 ![](http://s3.amazonaws.com/storefront-dump/upload.png)
 
 
-The upload interface is  accepts files as an input.  
+The upload interface is accepts files as an input.  
 It takes care of the following steps:
 
 * The original file gets uploaded to S3
@@ -13,54 +13,69 @@ It takes care of the following steps:
 * Relevant information about the file is saved to the database
 * The file is served via cloudfront with a far future expire
 
-The table in which such data is saved could have the following attributes.
+The table in which such data is saved have the following main attributes:
 
-![](http://s3.amazonaws.com/storefront-dump/model.png)
- 
+    class Image(models.Model):
+        content_object = model.GenericForeignKey()
+        
+        image_hash = model.CharField()
+        
+        hashed_image_in_storage = model.ImageField(storage=s3)
+        image_in_storage = model.ImageField(storage=s3)        
+
+        is_main = model.BooleanField()
+        order_number = model.PositiveInteger()
+        
 
 The images could then be retrieved using a simple query like:
 
         Images.objects.filter(content_type='articles', object_id=article_id, site_id=site_id) 
 
-Such a system should allow us to save any type of file. 
+Such a system allow us to save any type of file. 
 
-####The proposition
+####Usage
 
-There are many ways to go about solving such a problem. We do however have solutions within our toolbox to solve this particular issue. Eg. Django provides some abstractions. 
+###Template tags
+    {% load thumblr_tags %}
+    
+    <img src='{% thumblr 'boots.jpg' size='original' content_type_name='image' %}' />
 
-1. [The File class](https://docs.djangoproject.com/en/dev/ref/files/file/#django.core.files.File)
-A wrapper around the file object, which can be used to manipulate something that is represented as a file.
+    {% load thumblr_tags %}
+    {% thumblr_imgs size='original' as imgs %}
+    {% for img_url in imgs %}
+        <img src='{{ img_url }}' />
+    {% endfor %}
+    
+###API
 
-2. [The Storage class](https://docs.djangoproject.com/en/dev/ref/files/storage/#the-storage-class)
-This represents the location where the file needs to be stored. The default is of cause having it stored in the same machine as the code running it. This can however be easily extended.
-Here is a library that does just that [django-storages](http://django-storages.readthedocs.org/en/latest/backends/amazon-S3.html)
+Main purposes are covered with use cases, data should be provided with dto's 
+`ImageMetadata`, `ImageUrlSpec`. All this available from root package `thumblr`:
 
-3. [CachedStaticFilesStorage](https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#django.contrib.staticfiles.storage.CachedStaticFilesStorage)
-Is mechanism that calculates the hash and stores it in the caching system installed.
-The post process technique used is interesting as one would not necessarily have the cached value at hand at all times, so by guessing the file key eg. {% static 'product_id.jpg' %} django will use that value to locate the file, re-calculate the hash value and save it to its cache.  All the subsequent requests will have the hashed file served. 
+    import thumblr
+    
+    thumblr.add_image(
+        uploaded_file, 
+        thumblr.ImageMetadata(file_name='photo.jpg', ...)
+    )
+    images_dtos = thumblr.get_all_images(
+        thumblr.ImageMetadata(object_id=1, content_type_id=1)
+    )
+    thumblr.get_image_url(
+        thumblr.ImageMetadata(object_id=1, content_type_id=1, size_slug='original'), 
+        thumblr.ImageUrlSpec.S3
+    )
+    
+Uploaded file by itself should be provided as *django* *File*. 
+*ImageMetadata* - is a silver bullet of thumblr app. It represents file data (returned by *add_image*, *get_all_images*, etc.), 
+with it you could specify a *filter* from *get_all_images*.
 
-It seems as though the problem is solved. There is however challenges in wiring this all together and customising these components to work as described. 
-I'm thinking it could be useful if we split responsibility into 2-3 subsystems.
+### Image processing
+There also couple of utils for image processing: 
+ * Cropping, thumbnailing, watermarking, bubbles, ...
 
-![](http://s3.amazonaws.com/storefront-dump/H3r36G9.png)
+All this is placed in `thumblr.image_processing`. To prepare image for processing you may need functionality to convert
+ImageMetadata to Pillow Image and vice versa to work further. This functions are available in `thumblr.image_processing.context_mapping` 
 
-
-#####Thumblr's Responsibility
-* Manipulation (cropping, overlaying, resize, file-format conversion, feature-x)
-* Far future expire URLs with domain-alternation (static-0,static-1,static-n...).unisport.dk
-
-#####API's proveded Responsibility
-
- * image-api manipulation/fetching
- * image-api for cropping
- * image-api upload images
-
-
-
-
-So in phase 1 we want an app that exposes the api described above, with which we can use to create phase 2. 
-
-The most important aspect for us is that we have a standardized API that we can further extend when the need arises. 
 
 ####Installation
 First ensure that you have a valid ssh keys. Than install the application with:
@@ -101,44 +116,3 @@ First ensure that you have a valid ssh keys. Than install the application with:
         
 6. urlpatterns = patterns('image_tiles',
        url(r'^create/$', views.create_tile, {'template_name': 'create_tile.html'}, name='create_tile'),
-
-
-####Usage
- 
-1. To insert image:
-
-        from django.core.files import File
-        from thumblr.models import ImageSize
-        from thumblr.dto import ImageMetadata
-        from thumblr.usecases import add_image
-        
-        image = File(open('boots.jpg'))
-        image_metadata = ImageMetadata(
-                file_name='boots.jpg',
-                site_id=3,
-                size_slug=ImageSize.ORIGINAL,
-                content_type_id=5,
-                object_id=11,
-            )
-        add_image(image, image_metadata)
-        
-2. To use the image into template use template tags:
-
-        {% load thumblr_tags %}
-        {% thumblr 'boots.jpg' size='original' %}
-        
-    In case if site_id, content_type_id, object_id is in template context
-    
-        {% thumblr_imgs size='original' as imgs %}
-        {% for img_url in imgs %}
-            {{ img_url }}
-        {% endfor %}
-        
-    It's also possible to use size, site_id, content_type_id, object_id as an additional argument
-    
-        {% thumblr_imgs size='original' site_id=1 content_type_id=8 object_id=443 as imgs %}
-        {% for img_url in imgs %}
-            {{ img_url }}
-        {% endfor %}
-        
-    
