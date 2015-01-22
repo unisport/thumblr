@@ -1,18 +1,13 @@
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.core.files import File
 from django.db import models
 from django.conf import settings
 from django.db.models import Q
-from django.db.models.signals import pre_save, post_save
-from django.dispatch import receiver
 from django_boto.s3.storage import S3Storage
 from jsonfield import JSONField
 import ntpath
-import os
 from thumblr.dto import ImageMetadata
-from thumblr.utils.hash import file_hash
 
 
 s3 = S3Storage(

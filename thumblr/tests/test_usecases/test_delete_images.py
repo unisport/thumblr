@@ -1,4 +1,5 @@
 from django.core.files import File
+from moto import mock_s3
 import os
 from thumblr.dto import ImageMetadata
 from thumblr.models import ImageSize

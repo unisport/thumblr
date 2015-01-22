@@ -1,16 +1,10 @@
+import os
 from django.contrib.contenttypes.models import ContentType
 from django.core.files import File
 from django.test import TestCase
-from moto import mock_s3
-import os
 from thumblr import usecases
 from thumblr.dto import ImageMetadata
 from thumblr.models import ImageSize, Image
-
-
-# hack mocking with moto multiple times doesn't work, so mock once
-s3_mock = mock_s3()
-s3_mock.__enter__()
 
 
 class BaseThumblrTestCase(TestCase):

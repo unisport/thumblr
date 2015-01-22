@@ -1,36 +1,42 @@
-import boto
-from django.conf import settings
-from thumblr.models import upload_to
-from thumblr.services.query import get_image_by_id
-from thumblr.tests.base import BaseThumblrTestCase
+from django.contrib.contenttypes.models import ContentType
+from django.core.files import File
+from django.test.testcases import TestCase
+from moto import mock_s3
+import os
+from thumblr import ImageMetadata, add_image
+from thumblr.models import ImageSize, Image
 
 
-class TestAddImageUsecase(BaseThumblrTestCase):
+class TestAddImageUsecase(TestCase):
 
     def setUp(self):
         super(TestAddImageUsecase, self).setUp()
 
-        self.aws_key = settings.AWS_ACCESS_KEY_ID
-        self.aws_secret = settings.AWS_SECRET_ACCESS_KEY
-        self.bucket = settings.AWS_THUMBLR_BUCKET
-        s3_connection = boto.connect_s3(self.aws_key, self.aws_secret)
-        self.bucket_conn = s3_connection.get_bucket(self.bucket)
+        self.image_file_path = os.path.join(
+            os.path.dirname(__file__), "..", "data", "boots.jpg"
+        )
+        self.site_id = 1
+        self.content_type_id = ContentType.objects.get_for_model(Image).id
+        self.object_id = 1
+
+        original_size = ImageSize(name=ImageSize.ORIGINAL, content_type_id=self.content_type_id)
+        original_size.save()
+
+        self.image_metadata = ImageMetadata(
+            file_name='boots.jpg',
+            site_id=1,
+            size_slug=ImageSize.ORIGINAL,
+            content_type_id=self.content_type_id,
+            object_id=1,
+        )
 
     def test_basic_addition(self):
-        original_file = self.bucket_conn.get_key(
-            key_name=upload_to(
-                get_image_by_id(self.image_metadata.image_file_id),
-                "boots.jpg"
+        with open(self.image_file_path) as f:
+            self.image_metadata = add_image(
+                File(f),
+                self.image_metadata
             )
-        )
-        self.assertIsNotNone(original_file, "Original file does't exist on S3")
 
-        hash_file = self.bucket_conn.get_key(
-            key_name=upload_to(
-                get_image_by_id(self.image_metadata.image_file_id),
-                "boots.jpg"
-            )
-        )
-        self.assertIsNotNone(hash_file, "Hash file does't exist on S3")
+        self.assertEqual(Image.objects.count(), 1)
 
 

@@ -13,7 +13,9 @@ import sys
 from os.path import realpath, join, dirname
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+TEST = len(sys.argv) > 1 and sys.argv[1] == "test"
 
+TEST_RUNNER = 'thumblr.tests.runner.ThumblrTestRunner'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/

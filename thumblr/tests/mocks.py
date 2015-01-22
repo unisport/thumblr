@@ -24,6 +24,7 @@ def thumblr_pil_mock_deco(f):
 
     return _f
 
+
 @contextmanager
 def thumblr_pil_mock():
     set_mocked(True)
