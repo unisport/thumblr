@@ -1,7 +1,7 @@
 from django.test.testcases import TestCase
 from mock import MagicMock
 from thumblr.image_processing.basic_operations import thumbnail, overlay
-from thumblr.tests.mocks import thumblr_pil_mock
+from thumblr.tests.mocks import thumblr_pil_mock, thumblr_pil_mock_deco
 
 
 class TestMockingImageProcessing(TestCase):
@@ -25,3 +25,7 @@ class TestMockingImageProcessing(TestCase):
 
         with self.assertRaises(AssertionError):
             overlay(MagicMock(), MagicMock(), MagicMock(), MagicMock())
+
+    @thumblr_pil_mock_deco
+    def test_decorator(self):
+        thumbnail(MagicMock(), MagicMock())

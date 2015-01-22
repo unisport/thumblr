@@ -14,9 +14,15 @@ def mock_for_tests(f):
 
 
 def mock_func(img, *args, **kwargs):
-    print("calling mocked image processing function")
     return img
 
+
+def thumblr_pil_mock_deco(f):
+    def _f(*args, **kwargs):
+        with thumblr_pil_mock():
+            return f(*args, **kwargs)
+
+    return _f
 
 @contextmanager
 def thumblr_pil_mock():
