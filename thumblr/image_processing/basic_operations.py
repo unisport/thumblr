@@ -7,12 +7,14 @@ Each (new) function in this file dream to be side-effect-free:
 from collections import namedtuple
 import math
 from PIL import Image
+from thumblr.tests.mocks import mock_for_tests
 
 
 ImageDim = namedtuple('ImageDim', ['width', 'height'])
 ImagePos = namedtuple('ImagePos', ['x', 'y'])
 
 
+@mock_for_tests
 def squarify(original_img, result_size=ImageDim(width=1000, height=1000)):
     assert isinstance(original_img, Image.Image)
 
@@ -53,6 +55,7 @@ def squarify(original_img, result_size=ImageDim(width=1000, height=1000)):
     return square_image
 
 
+@mock_for_tests
 def overlay(original_img, overlay_img, position=ImagePos(x=0, y=0), mask=None):
     """
     mask = None -> use overlay_img itself (for PNG only)
@@ -73,6 +76,7 @@ def overlay(original_img, overlay_img, position=ImagePos(x=0, y=0), mask=None):
     return res_image
 
 
+@mock_for_tests
 def thumbnail(original_img, thumbnail_size=ImageDim(width=100, height=100)):
     assert isinstance(original_img, Image.Image)
 
@@ -82,6 +86,7 @@ def thumbnail(original_img, thumbnail_size=ImageDim(width=100, height=100)):
     return res_image
 
 
+@mock_for_tests
 def horizontal_flip(image):
     assert isinstance(image, Image.Image)
 
