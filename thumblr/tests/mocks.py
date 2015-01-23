@@ -9,7 +9,7 @@ __mocked = False
 
 def mock_for_tests(f):
     def _f(*args, **kwargs):
-        if is_mocked():
+        if thumblr_is_mocked():
             if f.__name__ in __usecases_func_map_to_mocks:
                 return __usecases_func_map_to_mocks[f.__name__](*args, **kwargs)
             else:
@@ -34,17 +34,17 @@ def thumblr_pil_mock_deco(f):
 
 @contextmanager
 def thumblr_pil_mock():
-    set_mocked(True)
+    thumblr_set_mocked(True)
     yield
-    set_mocked(False)
+    thumblr_set_mocked(False)
 
 
-def set_mocked(flag):
+def thumblr_set_mocked(flag):
     global __mocked
     __mocked = flag
 
 
-def is_mocked():
+def thumblr_is_mocked():
     return __mocked
 
 
@@ -217,6 +217,14 @@ def mock__get_images_of_sizes(image_metadata):
     return res
 
 
+def mock__get_image_data(image_metadata, url_spec):
+    assert isinstance(image_metadata, ImageMetadata)
+    gen = _find_image(image_metadata)
+    content = next(gen)[1]
+    content.open()
+    return content
+
+
 __usecases_func_map_to_mocks = {
     'add_image': mock__add_image,
     'get_image_url': mock__get_image_url,
@@ -225,4 +233,5 @@ __usecases_func_map_to_mocks = {
     'delete_images': mock__delete_images,
     'get_all_images': mock__get_all_images,
     'get_images_of_sizes': mock__get_images_of_sizes,
+    'get_image_data': mock__get_image_data,
 }

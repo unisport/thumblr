@@ -1,6 +1,8 @@
 """Use cases are the *only* entry points of thumblr lib, all parameters should be primitive python types, or DTO's (
 data transfer objects)
 """
+import cStringIO
+import urllib
 
 from django.db.transaction import atomic
 from thumblr.caching import cached
@@ -29,13 +31,29 @@ def add_image(uploaded_file, image_metadata):
 @mock_for_tests
 def get_image_url(image_metadata, url_spec):
     """
-    `image_file_id`, `file_name` and `size_slug` in image_metadata_spec are required for correct url caching
+    unique set of parameters in image_metadata_spec is required for correct url caching
     """
     assert isinstance(image_metadata, ImageMetadata)
 
     image_file = get_images_by_spec(image_metadata, one=True)
 
     return get_image_instance_url(image_file, url_spec)
+
+
+@mock_for_tests
+def get_image_data(image_metadata, url_spec):
+    """
+    returns data of image
+    """
+    assert isinstance(image_metadata, ImageMetadata)
+
+    image_url = get_image_url(image_metadata, url_spec)
+
+    stream = cStringIO.StringIO(
+        urllib.urlopen(image_url).read()
+    )
+
+    return stream
 
 
 @mock_for_tests
