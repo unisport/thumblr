@@ -8,12 +8,14 @@ from thumblr.dto import ImageMetadata
 from thumblr.services.cud import create_image, replace_uploaded_image, update_image_metadata
 from thumblr.services.query import get_image_metadata, get_images_by_spec
 from thumblr.services.url import get_image_instance_url
+from thumblr.tests.mocks import mock_for_tests
 
 
 __all__ = ['add_image', 'get_image_url', 'update_image', 'update_images_metadata', 'delete_images',
            'get_all_images', 'get_images_of_sizes']
 
 
+@mock_for_tests
 @atomic
 def add_image(uploaded_file, image_metadata):
     assert isinstance(image_metadata, ImageMetadata)
@@ -24,6 +26,7 @@ def add_image(uploaded_file, image_metadata):
 
 
 @cached
+@mock_for_tests
 def get_image_url(image_metadata, url_spec):
     """
     `image_file_id`, `file_name` and `size_slug` in image_metadata_spec are required for correct url caching
@@ -35,6 +38,7 @@ def get_image_url(image_metadata, url_spec):
     return get_image_instance_url(image_file, url_spec)
 
 
+@mock_for_tests
 @atomic
 def update_image(new_file, image_metadata):
     """Updates image specified by image_metadata spec with new_file.
@@ -49,6 +53,7 @@ def update_image(new_file, image_metadata):
     return get_image_metadata(image_file)
 
 
+@mock_for_tests
 @atomic
 def update_images_metadata(image_spec, updated_spec):
     assert isinstance(image_spec, ImageMetadata)
@@ -60,6 +65,7 @@ def update_images_metadata(image_spec, updated_spec):
         update_image_metadata(image, updated_spec)
 
 
+@mock_for_tests
 @atomic
 def delete_images(image_metadata, excepted=None):
     """
@@ -84,6 +90,7 @@ def delete_images(image_metadata, excepted=None):
             image_file.delete()
 
 
+@mock_for_tests
 def get_all_images(image_metadata, ordered=False):
     assert isinstance(image_metadata, ImageMetadata)
 
@@ -91,6 +98,7 @@ def get_all_images(image_metadata, ordered=False):
     return map(get_image_metadata, images)
 
 
+@mock_for_tests
 def get_images_of_sizes(image_metadata):
     """
     Retrieves all images by image_metadata as dict like:
