@@ -79,10 +79,10 @@ class Image(models.Model):
         return u"%s::%s::%s::%s::%s::%s" % (
             self.id,
             self.file_name,
-            self.site.name,
+            self.site.name if self.site else u'',
             self.image_hash,
             self.id,
-            self.size.name,
+            self.size.name if self.size else u'',
         )
 
     @classmethod
