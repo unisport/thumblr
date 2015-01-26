@@ -145,7 +145,7 @@ def mock__update_image(new_file, image_metadata):
     except StopIteration:
         raise NoSuchImageException
 
-    __images_storage[dto.image_file_id] = (dto, new_file)
+    __images_storage[_get_index_by_id(dto.image_file_id)] = (dto, new_file)
 
     return dto
 
