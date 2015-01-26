@@ -74,7 +74,7 @@ def _equal(dto_val, filtr_val):
     if filtr_val is None:
         return True
 
-    return filtr_val == dto_val
+    return str(filtr_val) == str(dto_val)
 
 
 def _find_image(image_metadata):
