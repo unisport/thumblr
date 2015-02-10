@@ -13,7 +13,8 @@ from thumblr.services.url import get_image_instance_url
 from thumblr.tests.mocks import mock_for_tests
 
 
-__all__ = ['add_image', 'get_image_url', 'update_image', 'update_images_metadata', 'delete_images',
+__all__ = ['add_image', 'get_image_url', 'get_image_data',
+           'update_image', 'update_images_metadata', 'delete_images',
            'get_all_images', 'get_images_of_sizes']
 
 
