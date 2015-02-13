@@ -27,6 +27,14 @@ class TestGetImageUrl(BaseThumblrTestCase):
         self.assertIn(u"unisport.dk", url)
         self.assertNotIn(u"boots.jpg", url)
 
+    def test_s3_url_multiple(self):
+        urls = usecases.get_image_url(self.image_metadata, ImageUrlSpec.S3_URL, one=False)
+
+        self.assertIsInstance(urls, tuple)
+        self.assertIn(u"https", urls[0])
+        self.assertIn(u"s3.amazonaws.com", urls[0])
+        self.assertNotIn(u"boots.jpg", urls[0])
+
     def tearDown(self):
         Image.objects.all().delete()
         ImageSize.objects.all().delete()

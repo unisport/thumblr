@@ -15,10 +15,11 @@ except InvalidCacheBackendError:
 thumblr_cache.get("FOO")
 
 
-def _get_key(f, *args):
-    return "{func_name}:{arg}".format(
+def _get_key(f, *args, **kwargs):
+    return "{func_name}:{arg}:{kwarg}".format(
         func_name=f.func_name,
         arg="_".join(map(str, args)),
+        kwarg="_".join(map(str, map(lambda item: "{}:{}".format(*item), kwargs.items()))),
     )
 
 
@@ -26,15 +27,15 @@ def cached(f):
     """Simple cache for functions, cached function **must** get only **positional** arguments, which have unique
     __str__ return value"""
 
-    def cached_f(*args):
-        key = _get_key(f, *args)
+    def cached_f(*args, **kwargs):
+        key = _get_key(f, *args, **kwargs)
 
         val = thumblr_cache.get(key)
 
         if val:
             return val
 
-        val = f(*args)
+        val = f(*args, **kwargs)
         thumblr_cache.set(key, val)
 
         return val
@@ -44,8 +45,8 @@ def cached(f):
     return cached_f
 
 
-def drop_cache_for(f, *args):
-    key = _get_key(f, *args)
+def drop_cache_for(f, *args, **kwargs):
+    key = _get_key(f, *args, **kwargs)
 
     thumblr_cache.delete(key)
 
@@ -58,14 +59,21 @@ def __drop_url_cache(sender, instance, *args, **kwargs):
 
     if instance.id:
         old_inst = get_image_by_id(instance.pk)
-        drop_cache_for(
-            get_image_url,
-            ImageMetadata(
-                image_file_id=old_inst.id,
-                file_name=old_inst.file_name,
-                size_slug=old_inst.size.name,
-                content_type_id=old_inst.content_type_id,
-                object_id=old_inst.object_id,
-            ),
-            ImageUrlSpec.CDN_URL,
+        dto = ImageMetadata(
+            image_file_id=old_inst.id,
+            file_name=old_inst.file_name,
+            size_slug=old_inst.size.name,
+            content_type_id=old_inst.content_type_id,
+            object_id=old_inst.object_id,
         )
+
+        drop_cache_for(get_image_url, dto, ImageUrlSpec.CDN_URL,)
+        drop_cache_for(get_image_url, dto, ImageUrlSpec.CDN_URL,)
+        drop_cache_for(get_image_url, dto, ImageUrlSpec.CDN_URL, one=True,)
+        drop_cache_for(get_image_url, dto, ImageUrlSpec.CDN_URL, one=False,)
+
+        drop_cache_for(get_image_url, dto, ImageUrlSpec.S3_URL,)
+        drop_cache_for(get_image_url, dto, ImageUrlSpec.S3_URL,)
+        drop_cache_for(get_image_url, dto, ImageUrlSpec.S3_URL, one=True,)
+        drop_cache_for(get_image_url, dto, ImageUrlSpec.S3_URL, one=False,)
+

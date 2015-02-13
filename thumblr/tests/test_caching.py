@@ -77,6 +77,16 @@ class TestCachingImageUrls(BaseThumblrTestCase):
 
         self.assertEqual(url1, url2)
 
+    def test_multiple(self):
+        locmem_cache = get_cache('django.core.cache.backends.locmem.LocMemCache')
+        locmem_cache.clear()
+
+        with patch.object(caching, 'thumblr_cache', locmem_cache):
+            url1 = usecases.get_image_url(self.image_metadata, ImageUrlSpec.CDN_URL, one=False)
+            url2 = usecases.get_image_url(self.image_metadata, ImageUrlSpec.CDN_URL, one=False)
+
+        self.assertEqual(url1, url2)
+
 
 class TestDropCacheImageUrls(BaseThumblrTestCase):
 
@@ -103,3 +113,19 @@ class TestDropCacheImageUrls(BaseThumblrTestCase):
 
         self.assertNotEqual(url1, url2)
 
+    def test_multiple(self):
+        locmem_cache = get_cache('django.core.cache.backends.locmem.LocMemCache')
+        locmem_cache.clear()
+
+        with patch.object(caching, 'thumblr_cache', locmem_cache):
+            url1 = usecases.get_image_url(self.image_metadata, ImageUrlSpec.CDN_URL, one=False)
+
+            with open(self.new_image_file_path) as f:
+                self.image_file = usecases.update_image(
+                    File(f),
+                    self.image_metadata
+                )
+
+            url2 = usecases.get_image_url(self.image_metadata, ImageUrlSpec.CDN_URL, one=False)
+
+        self.assertNotEqual(url1, url2)

@@ -30,15 +30,18 @@ def add_image(uploaded_file, image_metadata):
 
 @cached
 @mock_for_tests
-def get_image_url(image_metadata, url_spec):
+def get_image_url(image_metadata, url_spec, one=True):
     """
     unique set of parameters in image_metadata_spec is required for correct url caching
     """
     assert isinstance(image_metadata, ImageMetadata)
 
-    image_file = get_images_by_spec(image_metadata, one=True)
+    image_file = get_images_by_spec(image_metadata, one=one)
 
-    return get_image_instance_url(image_file, url_spec)
+    if one:
+        return get_image_instance_url(image_file, url_spec)
+    else:
+        return tuple(get_image_instance_url(x, url_spec) for x in image_file)
 
 
 @mock_for_tests
