@@ -67,12 +67,18 @@ def __drop_url_cache(sender, instance, *args, **kwargs):
             object_id=old_inst.object_id,
         )
 
-        drop_cache_for(get_image_url, dto, ImageUrlSpec.CDN_URL,)
+        drop_cache_for(get_image_url, dto.extend(image_file_id=None, file_name=None), ImageUrlSpec.CDN_URL,)
+        drop_cache_for(get_image_url, dto.extend(image_file_id=None, file_name=None), ImageUrlSpec.CDN_URL, one=True)
+        drop_cache_for(get_image_url, dto.extend(image_file_id=None, file_name=None), ImageUrlSpec.CDN_URL, one=False)
+
+        drop_cache_for(get_image_url, dto.extend(image_file_id=None, file_name=None), ImageUrlSpec.S3_URL,)
+        drop_cache_for(get_image_url, dto.extend(image_file_id=None, file_name=None), ImageUrlSpec.S3_URL, one=True)
+        drop_cache_for(get_image_url, dto.extend(image_file_id=None, file_name=None), ImageUrlSpec.S3_URL, one=False)
+
         drop_cache_for(get_image_url, dto, ImageUrlSpec.CDN_URL,)
         drop_cache_for(get_image_url, dto, ImageUrlSpec.CDN_URL, one=True,)
         drop_cache_for(get_image_url, dto, ImageUrlSpec.CDN_URL, one=False,)
 
-        drop_cache_for(get_image_url, dto, ImageUrlSpec.S3_URL,)
         drop_cache_for(get_image_url, dto, ImageUrlSpec.S3_URL,)
         drop_cache_for(get_image_url, dto, ImageUrlSpec.S3_URL, one=True,)
         drop_cache_for(get_image_url, dto, ImageUrlSpec.S3_URL, one=False,)
