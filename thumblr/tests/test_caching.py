@@ -8,6 +8,7 @@ from mock import patch
 from thumblr.caching import cached, drop_cache_for
 from thumblr.dto import ImageUrlSpec
 from thumblr import usecases
+from thumblr.exceptions import NoSuchImageException
 from thumblr.tests.base import BaseThumblrTestCase
 
 
@@ -135,6 +136,27 @@ class TestDropCacheImageUrls(BaseThumblrTestCase):
             )
 
         self.assertNotEqual(url1, url2)
+
+    def test_delete_dto_for_size_and_content_type(self):
+        locmem_cache = get_cache('django.core.cache.backends.locmem.LocMemCache')
+        locmem_cache.clear()
+
+        with patch.object(caching, 'thumblr_cache', locmem_cache):
+            url1 = usecases.get_image_url(
+                self.image_metadata.extend(image_file_id=None, file_name=None, image_hash=None),
+                ImageUrlSpec.CDN_URL
+            )
+
+            with open(self.new_image_file_path) as f:
+                self.image_file = usecases.delete_images(
+                    self.image_metadata.extend(image_file_id=None, file_name=None, image_hash=None)
+                )
+
+        with self.assertRaises(NoSuchImageException):
+            url2 = usecases.get_image_url(
+                self.image_metadata.extend(image_file_id=None, file_name=None, image_hash=None),
+                ImageUrlSpec.CDN_URL
+            )
 
     def test_multiple(self):
         locmem_cache = get_cache('django.core.cache.backends.locmem.LocMemCache')

@@ -28,7 +28,7 @@ def add_image(uploaded_file, image_metadata):
     return get_image_metadata(image)
 
 
-@cached
+# @cached
 @mock_for_tests
 def get_image_url(image_metadata, url_spec, one=True):
     """

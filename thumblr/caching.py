@@ -1,5 +1,5 @@
 from django.core.cache import get_cache, cache, InvalidCacheBackendError
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from thumblr.models import Image
 from thumblr.dto import ImageMetadata, ImageUrlSpec
@@ -52,6 +52,7 @@ def drop_cache_for(f, *args, **kwargs):
 
 
 @receiver(pre_save, sender=Image)
+@receiver(pre_delete, sender=Image)
 def __drop_url_cache(sender, instance, *args, **kwargs):
     assert isinstance(instance, Image)
 
