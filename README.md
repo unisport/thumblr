@@ -87,32 +87,14 @@ First ensure that you have a valid ssh keys. Than install the application with:
 
         INSTALLED_APPS = (
           ...
-          'django_tables2',
           'thumblr',
         )
         
 2. Add to settings 
-
         AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
         AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
         AWS_THUMBLR_BUCKET = os.environ.get('AWS_THUMBLR_BUCKET', 'thumblr-testing')        
 
-3. Add to settings TEMPLATE_CONTEXT_PROCESSORS
-
-        TEMPLATE_CONTEXT_PROCESSORS = (
-        ...
-        'django.core.context_processors.request',
-        )
-        
-4. Add environment variables related to AWS and S3 bucket
-        
-        AWS_ACCESS_KEY_ID="..."
-        AWS_SECRET_ACCESS_KEY="..."
-        AWS_THUMBLR_BUCKET="..."
-        
-5. Add admin to urls. In this case you will be able to add image sizes
-        
+3. Add admin to urls. In this case you will be able to add image sizes
         url(r'^admin/', include(admin.site.urls)),
         
-6. urlpatterns = patterns('image_tiles',
-       url(r'^create/$', views.create_tile, {'template_name': 'create_tile.html'}, name='create_tile'),
