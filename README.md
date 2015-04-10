@@ -100,3 +100,10 @@ First ensure that you have a valid ssh keys. Than install the application with:
 3. Add admin to urls. In this case you will be able to add image sizes
         url(r'^admin/', include(admin.site.urls)),
         
+#### Roadmap
+Features planned:
+ - ThumblrImageField - django forms field to add images to thumblr out-of-box
+ - Add safety checks for image deletion, to avoid dangerous behaviour
+
+Open source:
+ - Publish to PyPi
